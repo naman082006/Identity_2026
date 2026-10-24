@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,6 +17,9 @@
     }
     .premium-shadow { box-shadow: 0 24px 70px -35px rgba(49,46,129,.22); }
     .soft-card { box-shadow: 0 12px 35px -24px rgba(30,41,59,.25); }
+    #networkError { display: none; }
+    body.network-offline #networkError { display: flex; }
+    body.network-offline #mainContent { display: none; }
   </style>
 </head>
 
@@ -25,186 +27,197 @@
   data-failure-name="<%= typeof failureName !== 'undefined' && failureName ? failureName : '' %>"
   data-failure-active="<%= typeof healRequired !== 'undefined' && healRequired ? 'true' : 'false' %>">
 
-  <nav class="sticky top-0 z-20 border-b border-indigo-100/80 bg-white/90 backdrop-blur-xl">
-    <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 sm:px-8">
-      <a href="/" class="flex min-w-0 items-center gap-3">
-        <span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-xl font-black text-white shadow-lg">R</span>
-        <span>
-          <b class="heading block text-lg font-extrabold text-slate-900 sm:text-xl">ResultShield</b>
-          <small class="hidden text-xs text-slate-500 sm:block">Reliable Results. Resilient Systems.</small>
-        </span>
-      </a>
-      <a href="/dashboard" class="inline-flex items-center gap-2 rounded-xl border border-indigo-100 bg-indigo-50 px-3 py-2.5 text-xs font-bold text-indigo-700 sm:px-4 sm:text-sm">
-        <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
-        System Health ↗
-      </a>
+  <!-- NETWORK DISCONNECTED SCREEN -->
+  <section id="networkError" class="min-h-screen flex-col items-center justify-center bg-slate-950 px-6 text-center text-white">
+    <div class="mb-6 grid h-24 w-24 place-items-center rounded-3xl border border-rose-400/30 bg-rose-500/10 text-5xl">📡</div>
+    <p class="text-sm font-bold uppercase tracking-[0.3em] text-rose-400">ResultShield Network Monitor</p>
+    <h1 class="heading mt-5 text-5xl font-extrabold sm:text-7xl">404</h1>
+    <h2 class="mt-3 text-2xl font-bold">Connection Lost</h2>
+    <p class="mt-4 max-w-lg leading-7 text-slate-300">
+      Your internet connection was interrupted. Your result is temporarily hidden until the connection is restored.
+    </p>
+    <div class="mt-8 flex items-center gap-3 rounded-2xl border border-amber-400/20 bg-amber-400/10 px-5 py-4">
+      <span class="h-3 w-3 animate-pulse rounded-full bg-amber-400"></span>
+      <span id="networkStatus" class="text-sm font-semibold text-amber-200">Waiting for internet connection...</span>
     </div>
-  </nav>
+    <button id="retryNetworkButton" type="button" class="mt-6 rounded-xl bg-emerald-500 px-6 py-3 font-bold text-white hover:bg-emerald-400">
+      Retry Connection
+    </button>
+    <p class="mt-5 text-xs text-slate-500">ResultShield will automatically retry when your connection returns.</p>
+  </section>
 
-  <main class="mx-auto grid max-w-7xl gap-10 px-5 py-10 sm:px-8 sm:py-14 lg:grid-cols-[1fr_1.05fr] lg:gap-14 lg:py-20">
-
-    <section class="flex flex-col justify-center">
-      <div class="mb-6 flex w-fit items-center gap-2 rounded-full border border-indigo-100 bg-white px-4 py-2 text-xs font-bold text-indigo-700 shadow-sm">
-        <span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
-        RESILIENT STUDENT PORTAL
+  <div id="mainContent">
+    <nav class="sticky top-0 z-20 border-b border-indigo-100/80 bg-white/90 backdrop-blur-xl">
+      <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 sm:px-8">
+        <a href="/" class="flex min-w-0 items-center gap-3">
+          <span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-xl font-black text-white shadow-lg">R</span>
+          <span>
+            <b class="heading block text-lg font-extrabold text-slate-900 sm:text-xl">ResultShield</b>
+            <small class="hidden text-xs text-slate-500 sm:block">Reliable Results. Resilient Systems.</small>
+          </span>
+        </a>
+        <a href="/dashboard" class="inline-flex items-center gap-2 rounded-xl border border-indigo-100 bg-indigo-50 px-3 py-2.5 text-xs font-bold text-indigo-700 sm:px-4 sm:text-sm">
+          <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+          System Health ↗
+        </a>
       </div>
+    </nav>
 
-      <h1 class="heading max-w-2xl text-4xl font-extrabold leading-tight tracking-tight text-slate-900 sm:text-5xl xl:text-6xl">
-        Your hard work.<br>
-        Your results.<br>
-        <span class="bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 bg-clip-text text-transparent">Always within reach.</span>
-      </h1>
-
-      <p class="mt-6 max-w-xl text-base leading-8 text-slate-600 sm:text-lg">
-        Check your academic performance through a resilient result portal designed to recover from service interruptions.
-      </p>
-
-      <div class="mt-8 flex flex-wrap gap-3">
-        <div class="rounded-xl border border-white bg-white/90 px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm">✦ Smart Recovery</div>
-        <div class="rounded-xl border border-white bg-white/90 px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm">◉ Live Monitoring</div>
-      </div>
-
-      <div class="mt-10 grid max-w-xl grid-cols-3 gap-3 sm:gap-4">
-        <div class="soft-card rounded-2xl border border-white bg-white p-4 sm:p-5">
-          <div class="mb-3 text-xl text-blue-600">◷</div>
-          <b class="heading text-lg font-extrabold">24/7</b>
-          <small class="mt-1 block text-xs text-slate-500">Health Checks</small>
+    <main class="mx-auto grid max-w-7xl gap-10 px-5 py-10 sm:px-8 sm:py-14 lg:grid-cols-[1fr_1.05fr] lg:gap-14 lg:py-20">
+      <section class="flex flex-col justify-center">
+        <div class="mb-6 flex w-fit items-center gap-2 rounded-full border border-indigo-100 bg-white px-4 py-2 text-xs font-bold text-indigo-700 shadow-sm">
+          <span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+          RESILIENT STUDENT PORTAL
         </div>
-        <div class="soft-card rounded-2xl border border-white bg-white p-4 sm:p-5">
-          <div class="mb-3 text-xl text-violet-600">⟳</div>
-          <b class="heading text-lg font-extrabold">Manual</b>
-          <small class="mt-1 block text-xs text-slate-500">Recovery Control</small>
+
+        <h1 class="heading max-w-2xl text-4xl font-extrabold leading-tight tracking-tight text-slate-900 sm:text-5xl xl:text-6xl">
+          Your hard work.<br>Your results.<br>
+          <span class="bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 bg-clip-text text-transparent">Always within reach.</span>
+        </h1>
+
+        <p class="mt-6 max-w-xl text-base leading-8 text-slate-600 sm:text-lg">
+          Check your academic performance through a resilient result portal designed to recover from service interruptions.
+        </p>
+
+        <div class="mt-8 flex flex-wrap gap-3">
+          <div class="rounded-xl border border-white bg-white/90 px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm">✦ Smart Recovery</div>
+          <div class="rounded-xl border border-white bg-white/90 px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm">◉ Live Monitoring</div>
         </div>
-        <div class="soft-card rounded-2xl border border-white bg-white p-4 sm:p-5">
-          <div class="mb-3 text-xl text-emerald-600">✓</div>
-          <b class="heading text-lg font-extrabold">Live</b>
-          <small class="mt-1 block text-xs text-slate-500">Status Updates</small>
-        </div>
-      </div>
 
-      <div class="mt-8 flex items-start gap-3 rounded-2xl border border-indigo-100 bg-white/70 p-4">
-        <span class="text-xl text-indigo-600">✧</span>
-        <div>
-          <p class="text-sm font-bold text-slate-800">Built for reliability</p>
-          <p class="mt-1 text-xs leading-5 text-slate-500">A self-healing software demonstration for the student result system.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="premium-shadow self-start overflow-hidden rounded-[2rem] border border-white bg-white">
-      <div class="bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 px-6 py-7 text-white sm:px-9 sm:py-9">
-        <p class="text-xs font-bold uppercase tracking-[0.2em] text-blue-100">STUDENT SERVICES</p>
-        <h2 class="heading mt-3 text-2xl font-extrabold sm:text-3xl">Check your result</h2>
-        <p class="mt-2 text-sm leading-6 text-blue-100">Your academic journey, one result at a time.</p>
-      </div>
-
-      <div class="p-6 sm:p-9">
-        <form id="resultForm" action="/result" method="POST" class="space-y-4">
-          <label for="rollNumber" class="block text-sm font-bold text-slate-700">Enter your roll number</label>
-          <input
-            id="rollNumber"
-            name="rollNumber"
-            value="<%= typeof rollNumber !== 'undefined' && rollNumber ? rollNumber : '' %>"
-            required
-            autocomplete="off"
-            placeholder="e.g. RS2026001"
-            class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-slate-900 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
-          >
-          <button id="resultButton" type="submit" class="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-4 font-bold text-white shadow-lg transition hover:from-blue-700 hover:to-indigo-700">
-            View My Result →
-          </button>
-        </form>
-
-        <div id="loadingPanel" class="mt-5 hidden flex-col items-center gap-3 rounded-2xl border border-indigo-100 bg-indigo-50/70 p-6 text-center" role="status" aria-live="polite">
-          <div id="loadingSpinner" class="h-12 w-12 animate-spin rounded-full border-4 border-indigo-100 border-t-indigo-600"></div>
-          <p id="healingTitle" class="font-bold text-indigo-900">Failure Detected</p>
-          <p id="healingDescription" class="text-sm leading-6 text-slate-600">The system is waiting for manual recovery.</p>
-          <p id="loadingMessage" class="text-sm font-semibold text-blue-700">Waiting for your action...</p>
-
-          <div id="recoveryTimeline" class="hidden w-full space-y-3 text-left">
-            <div id="stepDetected" class="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm font-bold text-rose-700">1. Failure Detected</div>
-            <div id="stepHealing" class="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm font-bold text-amber-700">2. Waiting for manual healing</div>
-            <div id="stepRecovered" class="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm font-bold text-emerald-700">3. Recovery Pending</div>
+        <div class="mt-10 grid max-w-xl grid-cols-3 gap-3 sm:gap-4">
+          <div class="soft-card rounded-2xl border border-white bg-white p-4 sm:p-5">
+            <div class="mb-3 text-xl text-blue-600">◷</div>
+            <b class="heading text-lg font-extrabold">24/7</b>
+            <small class="mt-1 block text-xs text-slate-500">Health Checks</small>
           </div>
-
-          <button id="healButton" type="button" class="hidden w-full rounded-xl bg-emerald-600 px-5 py-3 font-bold text-white transition hover:bg-emerald-700">
-            Heal System
-          </button>
-        </div>
-
-        <div id="failureNamePanel" class="mt-4 hidden rounded-2xl border border-rose-200 bg-rose-50 p-4">
-          <p class="text-xs font-bold uppercase tracking-widest text-rose-600">Failure Detected</p>
-          <p id="failureNameText" class="mt-2 text-lg font-extrabold text-rose-800">System Failure</p>
-          <p class="mt-1 text-sm text-rose-700">Please use Heal System to restore the service.</p>
-        </div>
-
-        <% if (typeof error !== 'undefined' && error && !(typeof healRequired !== 'undefined' && healRequired)) { %>
-          <div class="mt-5 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm leading-6 text-rose-700">
-            <b class="mb-1 block">Unable to retrieve result</b>
-            <%= error %>
+          <div class="soft-card rounded-2xl border border-white bg-white p-4 sm:p-5">
+            <div class="mb-3 text-xl text-violet-600">⟳</div>
+            <b class="heading text-lg font-extrabold">Manual</b>
+            <small class="mt-1 block text-xs text-slate-500">Recovery Control</small>
           </div>
-        <% } %>
+          <div class="soft-card rounded-2xl border border-white bg-white p-4 sm:p-5">
+            <div class="mb-3 text-xl text-emerald-600">✓</div>
+            <b class="heading text-lg font-extrabold">Live</b>
+            <small class="mt-1 block text-xs text-slate-500">Status Updates</small>
+          </div>
+        </div>
 
-        <% if (typeof result !== 'undefined' && result) { %>
-          <div class="mt-7 overflow-hidden rounded-2xl border border-indigo-100 bg-gradient-to-br from-white to-indigo-50/60">
-            <div class="border-b border-indigo-100 p-5 sm:p-6">
-              <p class="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600">Academic Result</p>
-              <div class="mt-2 flex items-start justify-between gap-3">
-                <div>
-                  <h3 class="heading text-xl font-extrabold text-slate-900"><%= result.studentName %></h3>
-                  <p class="mt-2 text-sm leading-6 text-slate-500"><%= result.rollNumber %> · <%= result.course %> · <%= result.semester %></p>
-                </div>
-                <span class="rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 px-4 py-3 text-lg font-extrabold text-white"><%= result.grade %></span>
-              </div>
+        <div class="mt-8 flex items-start gap-3 rounded-2xl border border-indigo-100 bg-white/70 p-4">
+          <span class="text-xl text-indigo-600">✧</span>
+          <div>
+            <p class="text-sm font-bold text-slate-800">Built for reliability</p>
+            <p class="mt-1 text-xs leading-5 text-slate-500">A self-healing software demonstration for the student result system.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="premium-shadow self-start overflow-hidden rounded-[2rem] border border-white bg-white">
+        <div class="bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 px-6 py-7 text-white sm:px-9 sm:py-9">
+          <p class="text-xs font-bold uppercase tracking-[0.2em] text-blue-100">STUDENT SERVICES</p>
+          <h2 class="heading mt-3 text-2xl font-extrabold sm:text-3xl">Check your result</h2>
+          <p class="mt-2 text-sm leading-6 text-blue-100">Your academic journey, one result at a time.</p>
+        </div>
+
+        <div class="p-6 sm:p-9">
+          <form id="resultForm" action="/result" method="POST" class="space-y-4">
+            <label for="rollNumber" class="block text-sm font-bold text-slate-700">Enter your roll number</label>
+            <input id="rollNumber" name="rollNumber"
+              value="<%= typeof rollNumber !== 'undefined' && rollNumber ? rollNumber : '' %>"
+              required autocomplete="off" placeholder="e.g. RS2026001"
+              class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-slate-900 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10">
+            <button id="resultButton" type="submit" class="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-4 font-bold text-white shadow-lg transition hover:from-blue-700 hover:to-indigo-700">
+              View My Result →
+            </button>
+          </form>
+
+          <div id="loadingPanel" class="mt-5 hidden flex-col items-center gap-3 rounded-2xl border border-indigo-100 bg-indigo-50/70 p-6 text-center" role="status" aria-live="polite">
+            <div class="h-12 w-12 animate-spin rounded-full border-4 border-indigo-100 border-t-indigo-600"></div>
+            <p id="healingTitle" class="font-bold text-indigo-900">Failure Detected</p>
+            <p id="healingDescription" class="text-sm leading-6 text-slate-600">The system is waiting for manual recovery.</p>
+            <p id="loadingMessage" class="text-sm font-semibold text-blue-700">Waiting for your action...</p>
+
+            <div id="recoveryTimeline" class="hidden w-full space-y-3 text-left">
+              <div id="stepDetected" class="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm font-bold text-rose-700">1. Failure Detected</div>
+              <div id="stepHealing" class="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm font-bold text-amber-700">2. Waiting for manual healing</div>
+              <div id="stepRecovered" class="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm font-bold text-emerald-700">3. Recovery Pending</div>
             </div>
 
-            <% if (result.isCached || result.isCachedResult) { %>
-              <div class="mx-5 mt-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-800 sm:mx-6">
-                <b class="block">⚠ Database Failure — Showing Cached Result</b>
-                This is the previously saved result. The latest result will be available after the database is restored.
-              </div>
-            <% } %>
+            <button id="healButton" type="button" class="hidden w-full rounded-xl bg-emerald-600 px-5 py-3 font-bold text-white transition hover:bg-emerald-700">Heal System</button>
+          </div>
 
-            <div class="grid grid-cols-2 gap-3 p-5 sm:p-6">
-              <div class="rounded-2xl border border-blue-100 bg-white p-4">
-                <small class="font-semibold text-slate-500">Percentage</small>
-                <p class="heading mt-2 text-2xl font-extrabold text-blue-700"><%= result.percentage ?? 0 %>%</p>
-              </div>
-              <div class="rounded-2xl border border-violet-100 bg-white p-4">
-                <small class="font-semibold text-slate-500">Total Marks</small>
-                <p class="heading mt-2 text-2xl font-extrabold text-indigo-700"><%= result.total ?? 0 %>/<%= result.max ?? 0 %></p>
-              </div>
+          <div id="failureNamePanel" class="mt-4 hidden rounded-2xl border border-rose-200 bg-rose-50 p-4">
+            <p class="text-xs font-bold uppercase tracking-widest text-rose-600">Failure Detected</p>
+            <p id="failureNameText" class="mt-2 text-lg font-extrabold text-rose-800">System Failure</p>
+            <p class="mt-1 text-sm text-rose-700">Please use Heal System to restore the service.</p>
+          </div>
+
+          <% if (typeof error !== 'undefined' && error && !(typeof healRequired !== 'undefined' && healRequired)) { %>
+            <div class="mt-5 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm leading-6 text-rose-700">
+              <b class="mb-1 block">Unable to retrieve result</b><%= error %>
             </div>
+          <% } %>
 
-            <div class="px-5 pb-5 sm:px-6">
-              <p class="mb-2 text-xs font-bold uppercase tracking-widest text-slate-500">Subject-wise Marks</p>
-              <div class="rounded-2xl border border-slate-100 bg-white px-4">
-                <% Object.entries(result.marks || {}).forEach(([subject, mark]) => { %>
-                  <div class="flex items-center justify-between gap-4 border-b border-slate-100 py-3 text-sm last:border-0">
-                    <span class="capitalize text-slate-600"><%= subject.replace(/([A-Z])/g, ' $1') %></span>
-                    <b class="font-bold text-slate-900"><%= mark %>/100</b>
+          <% if (typeof result !== 'undefined' && result) { %>
+            <div id="resultCard" class="mt-7 overflow-hidden rounded-2xl border border-indigo-100 bg-gradient-to-br from-white to-indigo-50/60">
+              <div class="border-b border-indigo-100 p-5 sm:p-6">
+                <p class="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600">Academic Result</p>
+                <div class="mt-2 flex items-start justify-between gap-3">
+                  <div>
+                    <h3 class="heading text-xl font-extrabold text-slate-900"><%= result.studentName %></h3>
+                    <p class="mt-2 text-sm leading-6 text-slate-500"><%= result.rollNumber %> · <%= result.course %> · <%= result.semester %></p>
                   </div>
-                <% }) %>
+                  <span class="rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 px-4 py-3 text-lg font-extrabold text-white"><%= result.grade %></span>
+                </div>
               </div>
-              <p class="mt-4 rounded-xl border px-4 py-3 text-sm font-extrabold <%= result.pass ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-rose-200 bg-rose-50 text-rose-700' %>">
-                <%= result.pass ? '✓ PASS' : '✗ FAIL' %>
-              </p>
+
+              <% if (result.isCached || result.isCachedResult) { %>
+                <div class="mx-5 mt-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-800 sm:mx-6">
+                  <b class="block">⚠ Database Failure — Showing Cached Result</b>
+                  This is the previously saved result. The latest result will be available after the database is restored.
+                </div>
+              <% } %>
+
+              <div class="grid grid-cols-2 gap-3 p-5 sm:p-6">
+                <div class="rounded-2xl border border-blue-100 bg-white p-4">
+                  <small class="font-semibold text-slate-500">Percentage</small>
+                  <p class="heading mt-2 text-2xl font-extrabold text-blue-700"><%= result.percentage ?? 0 %>%</p>
+                </div>
+                <div class="rounded-2xl border border-violet-100 bg-white p-4">
+                  <small class="font-semibold text-slate-500">Total Marks</small>
+                  <p class="heading mt-2 text-2xl font-extrabold text-indigo-700"><%= result.total ?? 0 %>/<%= result.max ?? 0 %></p>
+                </div>
+              </div>
+
+              <div class="px-5 pb-5 sm:px-6">
+                <p class="mb-2 text-xs font-bold uppercase tracking-widest text-slate-500">Subject-wise Marks</p>
+                <div class="rounded-2xl border border-slate-100 bg-white px-4">
+                  <% Object.entries(result.marks || {}).forEach(([subject, mark]) => { %>
+                    <div class="flex items-center justify-between gap-4 border-b border-slate-100 py-3 text-sm last:border-0">
+                      <span class="capitalize text-slate-600"><%= subject.replace(/([A-Z])/g, ' $1') %></span>
+                      <b class="font-bold text-slate-900"><%= mark %>/100</b>
+                    </div>
+                  <% }) %>
+                </div>
+                <p class="mt-4 rounded-xl border px-4 py-3 text-sm font-extrabold <%= result.pass ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-rose-200 bg-rose-50 text-rose-700' %>">
+                  <%= result.pass ? '✓ PASS' : '✗ FAIL' %>
+                </p>
+              </div>
             </div>
+          <% } %>
+
+          <div class="mt-6 flex items-start gap-2 rounded-xl bg-slate-50 p-3.5">
+            <span>ⓘ</span>
+            <p class="text-xs leading-5 text-slate-500">Demo project: use a seeded demo roll number. Do not enter real student personal data.</p>
           </div>
-        <% } %>
-
-        <div class="mt-6 flex items-start gap-2 rounded-xl bg-slate-50 p-3.5">
-          <span>ⓘ</span>
-          <p class="text-xs leading-5 text-slate-500">Demo project: use a seeded demo roll number. Do not enter real student personal data.</p>
         </div>
-      </div>
-    </section>
-  </main>
+      </section>
+    </main>
 
-  <footer class="border-t border-indigo-100 bg-white/70 px-5 py-6 text-center">
-    <p class="text-sm font-bold text-slate-700">ResultShield</p>
-    <p class="mt-1 text-xs text-slate-500">BCA Third-Year Identity Project · Resilience Demonstration</p>
-  </footer>
+    <footer class="border-t border-indigo-100 bg-white/70 px-5 py-6 text-center">
+      <p class="text-sm font-bold text-slate-700">ResultShield</p>
+      <p class="mt-1 text-xs text-slate-500">BCA Third-Year Identity Project · Resilience Demonstration</p>
+    </footer>
+  </div>
 
   <script>
     const resultForm = document.getElementById('resultForm');
@@ -215,6 +228,89 @@
     const timeline = document.getElementById('recoveryTimeline');
 
     let formIsSubmitting = false;
+    let reconnectTimer = null;
+    let reloadInProgress = false;
+    let networkWasLost = false;
+
+    function setNetworkOffline(message) {
+      document.body.classList.add('network-offline');
+      document.getElementById('networkStatus').textContent =
+        message || 'Waiting for internet connection...';
+    }
+
+    function setNetworkOnline() {
+      document.body.classList.remove('network-offline');
+    }
+
+    async function verifyServerAndReload() {
+      if (!navigator.onLine || reloadInProgress) return;
+
+      reloadInProgress = true;
+      document.getElementById('networkStatus').textContent =
+        'Internet restored. Checking ResultShield server...';
+
+      try {
+        const response = await fetch('/api/health', {
+          method: 'GET',
+          cache: 'no-store'
+        });
+
+        if (!response.ok) throw new Error('Server unavailable');
+
+        setNetworkOnline();
+
+        if (networkWasLost) {
+          networkWasLost = false;
+          const roll = rollInput.value.trim();
+
+          if (roll) {
+            document.getElementById('networkStatus').textContent =
+              'Connection restored. Reloading your result...';
+
+            formIsSubmitting = true;
+            HTMLFormElement.prototype.submit.call(resultForm);
+            return;
+          }
+        }
+      } catch (error) {
+        setNetworkOffline('Internet may be back, but the server is not responding. Retrying...');
+      } finally {
+        reloadInProgress = false;
+      }
+    }
+
+    function startReconnectChecks() {
+      if (reconnectTimer) clearInterval(reconnectTimer);
+
+      reconnectTimer = setInterval(() => {
+        if (!navigator.onLine || document.body.classList.contains('network-offline')) {
+          verifyServerAndReload();
+        }
+      }, 3000);
+    }
+
+    window.addEventListener('offline', () => {
+      networkWasLost = true;
+      setNetworkOffline('Internet disconnected. Waiting to reconnect...');
+      startReconnectChecks();
+    });
+
+    window.addEventListener('online', () => {
+      networkWasLost = true;
+      verifyServerAndReload();
+      startReconnectChecks();
+    });
+
+    document.getElementById('retryNetworkButton').addEventListener('click', () => {
+      networkWasLost = true;
+      verifyServerAndReload();
+    });
+
+    if (!navigator.onLine) {
+      networkWasLost = true;
+      setNetworkOffline('Internet disconnected. Waiting to reconnect...');
+      startReconnectChecks();
+    }
 
     resultForm.addEventListener('submit', function (event) {
       if (formIsSubmitting) return;
@@ -222,6 +318,12 @@
 
       if (!rollInput.value.trim()) {
         rollInput.focus();
+        return;
+      }
+
+      if (!navigator.onLine) {
+        networkWasLost = true;
+        setNetworkOffline('Internet disconnected. Waiting to reconnect...');
         return;
       }
 
@@ -248,7 +350,7 @@
 
       document.getElementById('healingTitle').textContent = 'Failure Detected';
       document.getElementById('healingDescription').textContent =
-        'The failure is active. The system will not recover until you click Heal System.';
+        'The failure is active. Click Heal System to recover.';
       document.getElementById('loadingMessage').textContent = 'Waiting for manual action...';
       document.getElementById('failureNameText').textContent = names[type] || 'System Failure';
       document.getElementById('failureNamePanel').classList.remove('hidden');
@@ -258,6 +360,11 @@
     }
 
     healButton.addEventListener('click', async function () {
+      if (!navigator.onLine) {
+        setNetworkOffline('Internet is required to heal the system.');
+        return;
+      }
+
       healButton.disabled = true;
       healButton.textContent = 'Healing...';
       document.getElementById('healingTitle').textContent = 'Healing Initiated';
@@ -273,7 +380,9 @@
         });
 
         const data = await response.json();
-        if (!response.ok) throw new Error(data.error || 'Healing failed');
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || 'Healing failed');
+        }
 
         document.getElementById('stepRecovered').textContent = '3. Recovery Successful ✓';
         document.getElementById('healingTitle').textContent = 'Recovery Successful';
@@ -284,7 +393,8 @@
           HTMLFormElement.prototype.submit.call(resultForm);
         }, 900);
       } catch (error) {
-        document.getElementById('loadingMessage').textContent = error.message;
+        document.getElementById('loadingMessage').textContent =
+          error.message || 'Recovery failed. Please try again.';
         healButton.disabled = false;
         healButton.textContent = 'Try Healing Again';
       }

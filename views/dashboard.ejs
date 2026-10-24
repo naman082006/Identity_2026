@@ -13,7 +13,7 @@
 h1,h2,h3{font-family:'Manrope',sans-serif}
 body{background:#f5f6ff}
 .soft-card{box-shadow:0 10px 30px rgba(49,46,129,.06)}
-button:disabled{cursor:not-allowed}
+button:disabled{cursor:not-allowed;opacity:.55}
 </style>
 </head>
 
@@ -45,7 +45,7 @@ button:disabled{cursor:not-allowed}
           <span class="h-2 w-2 rounded-full bg-emerald-300"></span> Reliability Control Room
         </span>
         <h2 class="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">System Health Dashboard</h2>
-        <p class="mt-3 max-w-2xl text-sm leading-6 text-indigo-100">Monitor system components, test controlled failures and observe automatic recovery in real time.</p>
+        <p class="mt-3 max-w-2xl text-sm leading-6 text-indigo-100">Monitor system components, test controlled failures and observe recovery in real time.</p>
       </div>
       <div id="overall" class="w-fit rounded-full border border-white/20 bg-white/10 px-4 py-2.5 text-sm font-bold text-white">Connecting...</div>
     </div>
@@ -56,50 +56,35 @@ button:disabled{cursor:not-allowed}
     <div class="flex items-start gap-4">
       <div class="mt-1 h-7 w-7 shrink-0 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600"></div>
       <div>
-        <p class="font-extrabold text-blue-900">Failure Detected — Automatic Healing in Progress</p>
-        <p id="autoHealingDetail" class="mt-1 text-sm leading-6 text-blue-700">The controller is recovering the simulated service.</p>
+        <p class="font-extrabold text-blue-900">Failure Detected — Recovery Required</p>
+        <p id="autoHealingDetail" class="mt-1 text-sm leading-6 text-blue-700">Use Heal System to restore the application.</p>
       </div>
     </div>
   </section>
 
   <section class="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
     <div class="soft-card rounded-2xl border border-blue-100 bg-white p-5 transition hover:-translate-y-1">
-      <div class="flex items-center justify-between">
-        <p class="text-sm font-bold text-slate-500">Recoveries</p>
-        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-xl text-blue-600">↻</span>
-      </div>
+      <div class="flex items-center justify-between"><p class="text-sm font-bold text-slate-500">Recoveries</p><span class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-xl text-blue-600">↻</span></div>
       <b id="recoveries" class="mt-4 block text-3xl font-extrabold text-blue-700">—</b>
       <p class="mt-2 text-xs text-slate-400">Recovery actions completed</p>
     </div>
     <div class="soft-card rounded-2xl border border-indigo-100 bg-white p-5 transition hover:-translate-y-1">
-      <div class="flex items-center justify-between">
-        <p class="text-sm font-bold text-slate-500">Requests Handled</p>
-        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 text-xl text-indigo-600">⇄</span>
-      </div>
+      <div class="flex items-center justify-between"><p class="text-sm font-bold text-slate-500">Requests Handled</p><span class="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 text-xl text-indigo-600">⇄</span></div>
       <b id="requests" class="mt-4 block text-3xl font-extrabold text-indigo-700">—</b>
       <p class="mt-2 text-xs text-slate-400">Requests processed by app</p>
     </div>
     <div class="soft-card rounded-2xl border border-violet-100 bg-white p-5 transition hover:-translate-y-1">
-      <div class="flex items-center justify-between">
-        <p class="text-sm font-bold text-slate-500">Cached Results</p>
-        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-xl text-violet-600">▤</span>
-      </div>
+      <div class="flex items-center justify-between"><p class="text-sm font-bold text-slate-500">Cached Results</p><span class="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-xl text-violet-600">▤</span></div>
       <b id="cache" class="mt-4 block text-3xl font-extrabold text-violet-700">—</b>
       <p class="mt-2 text-xs text-slate-400">Results available in cache</p>
     </div>
     <div class="soft-card rounded-2xl border border-emerald-100 bg-white p-5 transition hover:-translate-y-1">
-      <div class="flex items-center justify-between">
-        <p class="text-sm font-bold text-slate-500">App Uptime</p>
-        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-xl text-emerald-600">◷</span>
-      </div>
+      <div class="flex items-center justify-between"><p class="text-sm font-bold text-slate-500">App Uptime</p><span class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-xl text-emerald-600">◷</span></div>
       <b id="uptime" class="mt-4 block text-3xl font-extrabold text-emerald-700">—</b>
       <p class="mt-2 text-xs text-slate-400">Current running duration</p>
     </div>
     <div class="soft-card rounded-2xl border border-amber-100 bg-white p-5 transition hover:-translate-y-1">
-      <div class="flex items-center justify-between">
-        <p class="text-sm font-bold text-slate-500">Rate-Limit Events</p>
-        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-xl text-amber-600">⚡</span>
-      </div>
+      <div class="flex items-center justify-between"><p class="text-sm font-bold text-slate-500">Rate-Limit Events</p><span class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-xl text-amber-600">⚡</span></div>
       <b id="limits" class="mt-4 block text-3xl font-extrabold text-amber-700">—</b>
       <p class="mt-2 text-xs text-slate-400">Requests blocked by limiter</p>
     </div>
@@ -133,6 +118,7 @@ button:disabled{cursor:not-allowed}
     </div>
 
     <div class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+
       <button onclick="chaos('database-on')" class="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-left transition hover:-translate-y-0.5 hover:border-amber-300 hover:shadow-md">
         <span class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-xl text-amber-700">⚠</span>
         <b class="block text-sm text-slate-800">1. Simulate Database Failure</b>
@@ -154,7 +140,7 @@ button:disabled{cursor:not-allowed}
       <button onclick="checkExternal()" class="rounded-2xl border border-blue-200 bg-blue-50 p-4 text-left transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md">
         <span class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 text-xl text-blue-700">↗</span>
         <b class="block text-sm text-slate-800">Call External Service</b>
-        <small class="mt-1 block leading-5 text-slate-500">Test retries and circuit breaker.</small>
+        <small class="mt-1 block leading-5 text-slate-500">Test external service availability.</small>
       </button>
 
       <button onclick="chaos('external-off')" class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-left transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md">
@@ -175,17 +161,24 @@ button:disabled{cursor:not-allowed}
         <small class="mt-1 block leading-5 text-slate-500">Remove the loading failure simulation.</small>
       </button>
 
-      <button id="trafficButton" onclick="loadTest()" class="rounded-2xl border border-indigo-200 bg-indigo-50 p-4 text-left transition hover:-translate-y-0.5 hover:border-indigo-300 hover:shadow-md">
+      <button id="trafficButton" onclick="trafficBurst()" class="rounded-2xl border border-indigo-200 bg-indigo-50 p-4 text-left transition hover:-translate-y-0.5 hover:border-indigo-300 hover:shadow-md">
         <span class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-xl text-indigo-700">⚡</span>
         <b class="block text-sm text-slate-800">3. Traffic Burst Test</b>
-        <small class="mt-1 block leading-5 text-slate-500">Send 80 parallel health requests.</small>
+        <small class="mt-1 block leading-5 text-slate-500">Simulate an application outage.</small>
       </button>
 
-      <button onclick="crashApp()" class="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-left transition hover:-translate-y-0.5 hover:border-rose-300 hover:shadow-md ">
+      <button id="healButton" onclick="healSystem()" class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-left transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md">
+        <span class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-xl text-emerald-700">✓</span>
+        <b class="block text-sm text-slate-800">Heal System</b>
+        <small class="mt-1 block leading-5 text-slate-500">Restore the application after a failure.</small>
+      </button>
+
+      <button onclick="crashApp()" class="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-left transition hover:-translate-y-0.5 hover:border-rose-300 hover:shadow-md">
         <span class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-rose-100 text-xl text-rose-700">⏻</span>
         <b class="block text-sm text-slate-800">4. Crash App Process (PM2 Demo)</b>
         <small class="mt-1 block leading-5 text-slate-500">Only use when PM2 is managing ResultShield.</small>
       </button>
+
     </div>
 
     <p id="chaosMessage" class="mt-5 rounded-xl border border-indigo-100 bg-indigo-50 px-4 py-3 text-sm font-semibold text-indigo-800" aria-live="polite">Ready for a test.</p>
@@ -208,7 +201,7 @@ button:disabled{cursor:not-allowed}
         <b id="burstTime" class="mt-2 block text-2xl font-extrabold text-blue-700">—</b>
       </div>
     </div>
-    <p class="mt-3 text-xs leading-5 text-slate-400">Burst results are from the latest test in this browser session. HTTP 429 means a request was rate-limited; other failures are counted separately.</p>
+    <p class="mt-3 text-xs leading-5 text-slate-400">Burst results show the latest test. HTTP 429 means a request was rate-limited.</p>
   </section>
 
   <section class="mt-9">
@@ -217,7 +210,6 @@ button:disabled{cursor:not-allowed}
       <h2 class="mt-1 text-2xl font-extrabold text-slate-900">Incident Timeline</h2>
       <p class="mt-1 text-sm text-slate-500">Detection, diagnosis and recovery events.</p>
     </div>
-
     <div class="soft-card overflow-hidden rounded-2xl border border-indigo-100 bg-white">
       <div class="overflow-x-auto">
         <table class="w-full min-w-[700px] text-left text-sm">
@@ -287,15 +279,23 @@ async function refresh() {
     if (!d || typeof d !== 'object') throw new Error('Invalid health response');
 
     const healingBanner = document.getElementById('autoHealingBanner');
-    if (d.autoFailureActive) {
+
+    if (d.applicationDown) {
       healingBanner.classList.remove('hidden');
       document.getElementById('autoHealingDetail').textContent =
-        `Recovering from ${d.autoFailureType || 'system'} failure. Automatic recovery is expected within 5–10 seconds.`;
+        'Application outage is active. Click Heal System to restore access.';
+    } else if (d.autoFailureActive) {
+      healingBanner.classList.remove('hidden');
+      document.getElementById('autoHealingDetail').textContent =
+        `Recovering from ${d.autoFailureType || 'system'} failure.`;
     } else {
       healingBanner.classList.add('hidden');
     }
 
-    const overallStatus = String(d.overall || 'degraded').toLowerCase();
+    const overallStatus = d.applicationDown
+      ? 'down'
+      : String(d.overall || 'degraded').toLowerCase();
+
     overall.textContent = overallStatus === 'healthy'
       ? '● All systems operational'
       : overallStatus === 'down'
@@ -312,9 +312,15 @@ async function refresh() {
     document.getElementById('limits').textContent = numberValue(d.rateLimitEvents);
 
     const components = Array.isArray(d.components) ? d.components : [];
+
     document.getElementById('components').innerHTML = components.length
       ? components.map(c => {
-          const status = String(c.status || 'degraded').toLowerCase();
+          let status = String(c.status || 'degraded').toLowerCase();
+
+          if (d.applicationDown && String(c.name || '').toLowerCase() === 'application') {
+            status = 'down';
+          }
+
           const badge = statusStyles[status] || statusStyles.degraded;
           const icon = status === 'healthy' ? '✓' : status === 'down' ? '!' : '⚠';
           const iconStyle = status === 'healthy'
@@ -331,12 +337,13 @@ async function refresh() {
               </div>
               <span class="shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-extrabold tracking-wide ${badge}">${escapeHtml(status.toUpperCase())}</span>
             </div>
-            <p class="mt-4 text-sm leading-6 text-slate-500">${escapeHtml(c.detail || 'No details available')}</p>
+            <p class="mt-4 text-sm leading-6 text-slate-500">${escapeHtml(d.applicationDown && String(c.name || '').toLowerCase() === 'application' ? 'Controlled outage active. Heal System is required.' : c.detail || 'No details available')}</p>
           </article>`;
         }).join('')
       : '<p class="rounded-2xl border border-slate-200 bg-white p-5 text-sm text-slate-500">No component data returned by the health API.</p>';
 
     const incidents = Array.isArray(d.incidents) ? d.incidents : [];
+
     document.getElementById('incidents').innerHTML = incidents.length
       ? incidents.map(i => `<tr class="border-b border-slate-100 align-top transition hover:bg-indigo-50/60">
           <td class="whitespace-nowrap p-4 text-slate-500">${escapeHtml(i.time ? new Date(i.time).toLocaleTimeString() : '—')}</td>
@@ -367,7 +374,10 @@ async function chaos(type) {
     });
 
     const d = await r.json().catch(() => ({}));
-    out.textContent = d.message || d.error || `Request returned HTTP ${r.status}.`;
+
+    if (!r.ok) throw new Error(d.error || d.message || `HTTP ${r.status}`);
+
+    out.textContent = d.message || `Completed: ${type}`;
     await refresh();
   } catch (e) {
     out.textContent = 'Request failed: ' + e.message;
@@ -381,13 +391,67 @@ async function checkExternal() {
   try {
     const r = await fetch('/api/external-check', { cache: 'no-store' });
     const d = await r.json().catch(() => ({}));
+
     out.textContent = r.ok
       ? (d.message || 'External service check completed.')
       : (d.error || d.message || `HTTP ${r.status}`) +
         ' — circuit ' + (d.circuitOpen ? 'OPEN' : 'not open yet');
+
     await refresh();
   } catch (e) {
     out.textContent = 'External check failed: ' + e.message;
+  }
+}
+
+async function trafficBurst() {
+  const out = document.getElementById('chaosMessage');
+
+  if (!confirm('Activate the Traffic Burst failure? The Student Portal will become temporarily unavailable.')) {
+  return;
+}
+
+  out.textContent = 'Activating controlled application outage...';
+
+  try {
+    const r = await fetch('/api/chaos/traffic-burst', {
+      method: 'POST',
+      cache: 'no-store'
+    });
+
+    const d = await r.json().catch(() => ({}));
+
+    if (!r.ok) throw new Error(d.error || d.message || `HTTP ${r.status}`);
+
+    out.textContent = d.message || 'Application outage activated. Click Heal System to recover.';
+    await refresh();
+  } catch (e) {
+    out.textContent = 'Traffic Burst failed: ' + e.message;
+  }
+}
+
+async function healSystem() {
+  const out = document.getElementById('chaosMessage');
+  const button = document.getElementById('healButton');
+
+  button.disabled = true;
+  out.textContent = 'Healing system and restoring application...';
+
+  try {
+    const r = await fetch('/api/chaos/traffic-restore', {
+      method: 'POST',
+      cache: 'no-store'
+    });
+
+    const d = await r.json().catch(() => ({}));
+
+    if (!r.ok) throw new Error(d.error || d.message || `HTTP ${r.status}`);
+
+    out.textContent = d.message || 'Application restored successfully.';
+    await refresh();
+  } catch (e) {
+    out.textContent = 'Heal failed: ' + e.message;
+  } finally {
+    button.disabled = false;
   }
 }
 
@@ -396,7 +460,6 @@ async function loadTest() {
   const button = document.getElementById('trafficButton');
 
   button.disabled = true;
-  button.classList.add('opacity-50', 'cursor-not-allowed');
   out.textContent = 'Sending 80 parallel requests and measuring HTTP responses...';
 
   const start = performance.now();
@@ -404,10 +467,7 @@ async function loadTest() {
   try {
     const results = await Promise.allSettled(
       Array.from({ length: 80 }, () =>
-        fetch('/api/chaos/traffic', {
-          method: 'GET',
-          cache: 'no-store'
-        })
+        fetch('/api/chaos/traffic', { method: 'GET', cache: 'no-store' })
       )
     );
 
@@ -415,26 +475,18 @@ async function loadTest() {
     let successful = 0;
     let blocked = 0;
     let otherErrors = 0;
-    let networkErrors = 0;
 
     for (const result of results) {
       if (result.status === 'rejected') {
-        networkErrors++;
-        continue;
-      }
-
-      const response = result.value;
-
-      if (response.status === 429) {
+        otherErrors++;
+      } else if (result.value.status === 429) {
         blocked++;
-      } else if (response.ok) {
+      } else if (result.value.ok) {
         successful++;
       } else {
         otherErrors++;
       }
     }
-
-    otherErrors += networkErrors;
 
     document.getElementById('burstSuccess').textContent = successful;
     document.getElementById('burstBlocked').textContent = blocked;
@@ -442,14 +494,13 @@ async function loadTest() {
     document.getElementById('burstTime').textContent = elapsed + ' ms';
 
     out.textContent =
-      `Traffic burst completed: ${successful} successful, ${blocked} rate-limited (HTTP 429), ${otherErrors} other/network errors, in ${elapsed} ms.`;
+      `Traffic test completed: ${successful} successful, ${blocked} rate-limited, ${otherErrors} other/network errors, in ${elapsed} ms.`;
 
     await refresh();
   } catch (e) {
     out.textContent = 'Traffic test failed: ' + e.message;
   } finally {
     button.disabled = false;
-    button.classList.remove('opacity-50', 'cursor-not-allowed');
   }
 }
 
@@ -459,6 +510,7 @@ async function crashApp() {
   try {
     const r = await fetch('/api/chaos/crash', { method: 'POST' });
     const d = await r.json().catch(() => ({}));
+
     document.getElementById('chaosMessage').textContent =
       d.message || 'Process may be restarting. Refresh after a few seconds.';
   } catch (e) {

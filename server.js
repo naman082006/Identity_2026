@@ -1,4 +1,3 @@
-
 require('dotenv').config();
 
 const express = require('express');
@@ -39,6 +38,7 @@ app.use(session({
 
 const state = {
   startedAt: Date.now(),
+  applicationDown: false,
   databaseDown: false,
   externalServiceDown: false,
   resultLoadingHang: false,
@@ -119,14 +119,77 @@ mongoose.connection.on('reconnected', () => {
   logIncident('database', 'Recovered', 'MongoDB reconnected');
 });
 
+/*
+ * Controlled outage:
+ * Keep the dashboard, health API and recovery endpoints available.
+ * Block the Student Portal and normal application routes during the outage.
+ */
+app.use((req, res, next) => {
+  if (!state.applicationDown) return next();
+
+  const allowedDuringOutage =
+    req.path === '/dashboard' ||
+    req.path === '/api/health' ||
+    req.path === '/api/chaos/traffic-restore' ||
+    req.path === '/api/admin/restore-system';
+
+  if (allowedDuringOutage) return next();
+
+  if (req.path.startsWith('/api/')) {
+    return res.status(503).json({
+      success: false,
+      applicationDown: true,
+      message: 'APPLICATION DOWN: Traffic Burst failure is active. Open the Health Dashboard and click Restore Application.'
+    });
+  }
+
+  return res.status(503).send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>ResultShield | Application Unavailable</title>
+      <style>
+        body{margin:0;min-height:100vh;display:grid;place-items:center;background:#071b15;color:#f5f0df;font-family:Arial,sans-serif}
+        main{max-width:520px;margin:24px;padding:36px;border:1px solid #345346;border-radius:20px;background:#102820;text-align:center}
+        h1{color:#ff9292}
+        p{line-height:1.7;color:#c0d0c4}
+        a{display:inline-block;margin-top:14px;padding:12px 18px;border-radius:9px;background:#e7c66b;color:#14251b;text-decoration:none;font-weight:bold}
+      </style>
+    </head>
+    <body>
+      <main>
+        <h1>APPLICATION DOWN</h1>
+        <p>ResultShield is experiencing a simulated traffic outage.</p>
+        <p>The recovery console is still available. Restore the application from the Health Dashboard.</p>
+        <a href="/dashboard">Open Health Dashboard</a>
+      </main>
+    </body>
+    </html>
+  `);
+});
+
 app.use('/api/', rateLimit({
   windowMs: 60 * 1000,
   limit: 60,
   standardHeaders: 'draft-7',
   legacyHeaders: false,
+
+  // Keep recovery and chaos controls accessible during traffic tests.
+  skip: (req) =>
+    req.path === '/health' ||
+    req.path.startsWith('/chaos/') ||
+    req.path === '/admin/restore-system',
+
   handler: (req, res) => {
     state.rateLimitEvents++;
-    logIncident('traffic', 'Detected', 'Rate limit reached; request rejected to protect the app');
+
+    logIncident(
+      'traffic',
+      'Detected',
+      'Rate limit reached; request rejected to protect the app'
+    );
 
     res.status(429).json({
       success: false,
@@ -204,6 +267,17 @@ function cacheResult(result) {
     data,
     cachedAt: new Date().toISOString()
   });
+}
+
+function clearResultCache(reason) {
+  const count = resultCache.size;
+  resultCache.clear();
+
+  logIncident(
+    'result-cache',
+    'Action taken',
+    `Cleared ${count} cached result(s). ${reason}`
+  );
 }
 
 function removeCachedResult(rollNumber) {
@@ -302,14 +376,9 @@ async function getResult(rollNumber) {
   const key = String(rollNumber || '').trim().toUpperCase();
   if (!key) return null;
 
+  if (state.applicationDown) throw new Error('APPLICATION_DOWN');
   if (state.resultLoadingHang) throw new Error('RESULT_LOADING_HANG');
-
-  if (databaseUnavailable()) {
-    const cached = resultCache.get(key);
-
-    if (cached) return { ...calculateResult(cached.data), isCached: true };
-    throw new Error('DATABASE_FAILURE');
-  }
+  if (databaseUnavailable()) throw new Error('DATABASE_FAILURE');
 
   try {
     await retry(() => callExternalService(), 'external-service', 2);
@@ -327,16 +396,9 @@ async function getResult(rollNumber) {
   } catch (error) {
     state.lastError = error.message;
 
-    if (error.message === 'RESULT_LOADING_HANG') throw error;
-
-    if (
-      state.externalServiceDown ||
-      state.externalCircuitOpen ||
-      /external|circuit/i.test(error.message)
-    ) throw new Error('EXTERNAL_SERVICE_FAILURE');
-
-    const cached = resultCache.get(key);
-    if (cached) return { ...calculateResult(cached.data), isCached: true };
+    if (/external|circuit/i.test(error.message)) {
+      throw new Error('EXTERNAL_SERVICE_FAILURE');
+    }
 
     throw new Error('DATABASE_FAILURE');
   }
@@ -373,7 +435,7 @@ app.post('/result', async (req, res) => {
     return renderFailure('result-loading', 'Result loading has failed. Click Heal System to recover.');
   }
 
-  if (databaseUnavailable() && !resultCache.has(rollNumber)) {
+  if (databaseUnavailable()) {
     return renderFailure('database', 'Database failure detected. Click Heal System to recover.');
   }
 
@@ -443,6 +505,26 @@ app.get('/auto-healing-status', (req, res) => {
     message: failureActive ? 'Failure detected. Manual recovery required.' : 'System operational'
   });
 });
+
+async function restoreSimulatedFailures() {
+  state.applicationDown = false;
+  state.databaseDown = false;
+  state.externalServiceDown = false;
+  state.resultLoadingHang = false;
+  state.externalCircuitOpen = false;
+  state.externalFailures = 0;
+  state.circuitOpenedAt = 0;
+  state.autoFailureActive = false;
+  state.autoFailureType = null;
+  state.autoFailureRollNumber = null;
+  state.autoHealingUntil = null;
+
+  if (mongoose.connection.readyState !== 1) {
+    await mongoose.connect(MONGODB_URI, { serverSelectionTimeoutMS: 5000 });
+  }
+
+  state.lastError = null;
+}
 
 app.post('/api/heal-result', async (req, res) => {
   const rollNumber = String(req.body.rollNumber || '').trim().toUpperCase();
@@ -564,8 +646,6 @@ app.get('/admin', requireAdmin, (req, res) => res.render('admin'));
 
 app.get('/admin/add-result', requireAdmin, (req, res) => res.render('add-result'));
 
-/* FIX: Edit button GET route */
-
 app.get('/admin/edit-result/:id', requireAdmin, async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -583,29 +663,78 @@ app.get('/admin/edit-result/:id', requireAdmin, async (req, res) => {
   }
 });
 
+/* This endpoint remains reachable during the controlled outage. */
+app.post('/api/admin/restore-system', requireAdmin, async (req, res) => {
+  try {
+    logIncident('application', 'Detected', 'Manual system recovery requested');
+    logIncident('application', 'Diagnosed', 'Restoring simulated failure flags and checking MongoDB');
+
+    await restoreSimulatedFailures();
+    clearResultCache('System restored; old cached results discarded');
+
+    const studentCount = await Result.countDocuments();
+
+    logIncident('application', 'Action taken', 'Failure flags cleared and database connection checked');
+    logIncident('application', 'Recovered', 'System restored successfully from admin recovery control');
+
+    return res.json({
+      success: true,
+      message: 'System restored successfully.',
+      studentCount
+    });
+  } catch (error) {
+    state.lastError = error.message;
+
+    return res.status(503).json({
+      success: false,
+      message: 'Recovery failed. Check the MongoDB connection and try again.'
+    });
+  }
+});
+
 app.get('/api/health', (req, res) => {
   const dbConnected = mongoose.connection.readyState === 1 && !state.databaseDown;
 
   const components = [
-    { name: 'Application', status: 'healthy', detail: 'Express server is responding' },
-    { name: 'MongoDB', status: dbConnected ? 'healthy' : 'degraded', detail: dbConnected ? 'Connected' : 'Unavailable or simulated failure' },
-    { name: 'Result Cache', status: resultCache.size ? 'healthy' : 'degraded', detail: `${resultCache.size} result(s) cached` },
+    {
+      name: 'Application',
+      status: state.applicationDown ? 'down' : 'healthy',
+      detail: state.applicationDown ? 'Controlled traffic outage active' : 'Express server is responding'
+    },
+    {
+      name: 'MongoDB',
+      status: dbConnected ? 'healthy' : 'degraded',
+      detail: dbConnected ? 'Connected' : 'Unavailable or simulated failure'
+    },
+    {
+      name: 'Result Cache',
+      status: resultCache.size ? 'healthy' : 'degraded',
+      detail: `${resultCache.size} result(s) cached`
+    },
     {
       name: 'External Result Service',
       status: state.externalCircuitOpen ? 'degraded' : state.externalServiceDown ? 'down' : 'healthy',
       detail: state.externalCircuitOpen ? 'Circuit open; calls paused' : state.externalServiceDown ? 'Simulated timeout active' : 'Responding normally'
     },
-    { name: 'Traffic Guard', status: 'healthy', detail: `${state.rateLimitEvents} rate-limit event(s) recorded` },
+    {
+      name: 'Traffic Guard',
+      status: 'healthy',
+      detail: `${state.rateLimitEvents} rate-limit event(s) recorded`
+    },
     {
       name: 'Manual Recovery',
-      status: state.databaseDown || state.externalServiceDown || state.resultLoadingHang ? 'degraded' : 'healthy',
-      detail: state.databaseDown || state.externalServiceDown || state.resultLoadingHang ? 'Failure active; waiting for manual recovery' : 'Ready for manual recovery'
+      status: state.applicationDown || state.databaseDown || state.externalServiceDown || state.resultLoadingHang ? 'degraded' : 'healthy',
+      detail: state.applicationDown || state.databaseDown || state.externalServiceDown || state.resultLoadingHang ? 'Failure active; waiting for recovery' : 'Ready for manual recovery'
     }
   ];
 
+  const degraded = components.some(component => component.status !== 'healthy');
+
+  res.set('Cache-Control', 'no-store');
   res.json({
-    overall: components.some(c => c.status !== 'healthy') ? 'degraded' : 'healthy',
-    status: components.some(c => c.status !== 'healthy') ? 'DEGRADED' : 'HEALTHY',
+    overall: degraded ? 'degraded' : 'healthy',
+    status: state.applicationDown ? 'APPLICATION DOWN' : degraded ? 'DEGRADED' : 'HEALTHY',
+    applicationDown: state.applicationDown,
     uptimeSeconds: Math.floor((Date.now() - state.startedAt) / 1000),
     components,
     incidents: state.incidents.slice(0, 30),
@@ -616,6 +745,7 @@ app.get('/api/health', (req, res) => {
     externalServiceDown: state.externalServiceDown,
     externalCircuitOpen: state.externalCircuitOpen,
     resultLoadingHang: state.resultLoadingHang,
+    rateLimitEvents: state.rateLimitEvents,
     lastError: state.lastError,
     autoFailureActive: state.autoFailureActive,
     autoFailureType: state.autoFailureType,
@@ -652,7 +782,7 @@ app.get('/api/external-check', async (req, res) => {
   }
 });
 
-app.post('/api/chaos/:type', (req, res) => {
+app.post('/api/chaos/:type', async (req, res) => {
   if (!CHAOS_ENABLED) {
     return res.status(403).json({
       error: 'Chaos testing is disabled. Set CHAOS_ENABLED=true in local development.'
@@ -661,11 +791,44 @@ app.post('/api/chaos/:type', (req, res) => {
 
   const { type } = req.params;
 
+  if (type === 'traffic-restore') {
+    state.applicationDown = false;
+    logIncident('application', 'Action taken', 'Traffic outage manually cleared');
+    logIncident('application', 'Recovered', 'Application restored from Health Dashboard');
+
+    return res.json({
+      success: true,
+      applicationDown: false,
+      message: 'Application restored successfully. Student Portal is available again.'
+    });
+  }
+
+  if (type === 'traffic-burst') {
+    if (state.applicationDown) {
+      return res.json({
+        success: true,
+        applicationDown: true,
+        message: 'Application outage is already active.'
+      });
+    }
+
+    state.applicationDown = true;
+    logIncident('traffic', 'Detected', 'Traffic Burst test injected: application made unavailable');
+    logIncident('traffic', 'Diagnosed', 'Controlled outage enabled; recovery console remains available');
+    logIncident('traffic', 'Action taken', 'Student Portal and Admin Panel requests are blocked');
+
+    return res.json({
+      success: true,
+      applicationDown: true,
+      message: 'Traffic Burst simulated outage activated. Use Restore Application to recover.'
+    });
+  }
+
   if (type === 'database-on') {
     state.databaseDown = true;
+    clearResultCache('Database failure active; cached fallback disabled');
     logIncident('database', 'Detected', 'Chaos test injected: database reads disabled');
-    logIncident('database', 'Diagnosed', 'Database failure enabled; existing cached results preserved');
-    logIncident('database', 'Action taken', 'Cached-result fallback remains available');
+    logIncident('database', 'Diagnosed', 'Result lookups now require database access');
   } else if (type === 'database-off') {
     state.databaseDown = false;
     logIncident('database', 'Recovered', 'Database failure simulation removed manually');
@@ -690,21 +853,26 @@ app.post('/api/chaos/:type', (req, res) => {
     state.resultLoadingHang = false;
     logIncident('application', 'Recovered', 'Result loading failure removed manually');
   } else if (type === 'crash') {
-    logIncident('application', 'Detected', 'Chaos test injected: process will exit; PM2 should restart it');
-    res.json({ message: 'Process will exit in 300ms. Use PM2 to observe automatic restart.' });
+    logIncident('application', 'Detected', 'Real process crash requested; PM2 should restart it');
+
+    res.json({
+      message: 'Node.js process will exit shortly. PM2 must be running with autorestart enabled.'
+    });
+
     setTimeout(() => process.exit(1), 300);
     return;
   } else {
     return res.status(400).json({ error: 'Unknown chaos type' });
   }
 
-  return res.json({ ok: true, type, message: `Chaos action ${type} applied` });
+  return res.json({ success: true, ok: true, type, message: `Chaos action ${type} applied` });
 });
 
 app.get('/api/chaos/traffic', (req, res) => {
   if (!CHAOS_ENABLED) return res.status(403).json({ error: 'Chaos testing disabled' });
 
   logIncident('traffic', 'Detected', 'Traffic test endpoint hit; API rate limiter is active');
+
   return res.json({
     message: 'Traffic test endpoint responded',
     requestCount: state.requestCount
@@ -869,5 +1037,6 @@ app.get('/api/admin/seed-status', requireAdmin, (req, res) => {
 app.listen(PORT, () => {
   console.log(`ResultShield running at http://localhost:${PORT}`);
   console.log(`Health dashboard: http://localhost:${PORT}/dashboard`);
+  console.log(`Chaos testing enabled: ${CHAOS_ENABLED}`);
   connectWithRetry();
 });
