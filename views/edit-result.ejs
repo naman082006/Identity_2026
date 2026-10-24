@@ -1,0 +1,189 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Student Result | ResultShield</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="min-h-screen bg-[#f4f7fc] text-[#172b45]" style="font-family:'DM Sans',sans-serif">
+
+  <nav class="border-b border-[#e3eaf4] bg-white">
+    <div class="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
+      <a href="/admin" class="flex items-center gap-3">
+        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#5038ff] text-lg font-extrabold text-white">R</div>
+        <div>
+          <h2 class="font-extrabold text-[#172b45]" style="font-family:Manrope,sans-serif">ResultShield</h2>
+          <p class="text-[10px] font-semibold tracking-[2px] text-[#7185a5]">ADMIN CONTROL CENTER</p>
+        </div>
+      </a>
+      <div class="flex items-center gap-5 text-sm font-medium">
+        <a href="/" class="hidden text-[#526987] hover:text-[#5038ff] sm:block">Student Portal</a>
+        <a href="/dashboard" class="hidden text-[#526987] hover:text-[#5038ff] sm:block">Health Dashboard</a>
+        <a href="/admin/logout" class="font-semibold text-rose-500 hover:text-rose-600">Logout ↗</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="mx-auto max-w-6xl px-5 py-9 sm:py-12">
+
+    <div class="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-[2px] text-[#5038ff]">Control Center</p>
+        <h1 class="mt-2 text-3xl font-extrabold tracking-tight text-[#172b45]" style="font-family:Manrope,sans-serif">Edit Student Result</h1>
+        <p class="mt-2 text-sm text-[#7185a5]">Update student details, marks and academic information.</p>
+      </div>
+      <a href="/admin" class="inline-flex items-center justify-center rounded-xl border border-[#e3eaf4] bg-white px-5 py-3 text-sm font-semibold text-[#526987] shadow-sm transition hover:border-[#5038ff] hover:text-[#5038ff]">← Back to Dashboard</a>
+    </div>
+
+    <div class="mt-8 grid gap-5 sm:grid-cols-3">
+      <div class="rounded-2xl border border-[#e3eaf4] bg-white p-5 shadow-sm">
+        <p class="text-sm text-[#7185a5]">Student Name</p>
+        <p class="mt-2 truncate text-lg font-bold text-[#172b45]"><%= result.studentName || 'Student' %></p>
+        <p class="mt-1 text-xs text-[#9aabc1]">Registered student</p>
+      </div>
+      <div class="rounded-2xl border border-[#e3eaf4] bg-white p-5 shadow-sm">
+        <p class="text-sm text-[#7185a5]">Roll Number</p>
+        <p class="mt-2 text-lg font-bold text-[#5038ff]"><%= result.rollNumber || 'N/A' %></p>
+        <p class="mt-1 text-xs text-[#9aabc1]">Student identification</p>
+      </div>
+      <div class="rounded-2xl border border-[#e3eaf4] bg-white p-5 shadow-sm">
+        <p class="text-sm text-[#7185a5]">Maximum Marks</p>
+        <p class="mt-2 text-lg font-bold text-[#172b45]">500</p>
+        <p class="mt-1 text-xs text-[#9aabc1]">5 subjects · 100 marks each</p>
+      </div>
+    </div>
+
+    <div class="mt-6 overflow-hidden rounded-2xl border border-[#e3eaf4] bg-white shadow-sm">
+      <div class="border-b border-[#e3eaf4] px-6 py-5 sm:px-8">
+        <h2 class="text-lg font-bold text-[#172b45]">Student Information</h2>
+        <p class="mt-1 text-sm text-[#7185a5]">Make changes in the fields below.</p>
+      </div>
+
+      <form id="editForm" data-id="<%= result._id %>" class="space-y-8 p-6 sm:p-8">
+
+        <section>
+          <h3 class="mb-5 flex items-center gap-2 font-bold text-[#172b45]">
+            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#5038ff]/10 text-sm text-[#5038ff]">01</span>
+            Basic Details
+          </h3>
+
+          <div class="grid gap-5 sm:grid-cols-2">
+            <label class="text-sm font-semibold text-[#526987]">Student Name
+              <input name="studentName" required value="<%= result.studentName || '' %>" class="mt-2 w-full rounded-xl border border-[#dce5f1] bg-[#fbfcff] px-4 py-3 text-[#172b45] outline-none transition focus:border-[#5038ff] focus:ring-2 focus:ring-[#5038ff]/10">
+            </label>
+
+            <label class="text-sm font-semibold text-[#526987]">Roll Number
+              <input name="rollNumber" required value="<%= result.rollNumber || '' %>" class="mt-2 w-full rounded-xl border border-[#dce5f1] bg-[#fbfcff] px-4 py-3 text-[#172b45] outline-none transition focus:border-[#5038ff] focus:ring-2 focus:ring-[#5038ff]/10">
+            </label>
+
+            <label class="text-sm font-semibold text-[#526987]">Course
+              <input name="course" required value="<%= result.course || 'BCA' %>" class="mt-2 w-full rounded-xl border border-[#dce5f1] bg-[#fbfcff] px-4 py-3 text-[#172b45] outline-none transition focus:border-[#5038ff] focus:ring-2 focus:ring-[#5038ff]/10">
+            </label>
+
+            <label class="text-sm font-semibold text-[#526987]">Semester
+              <input name="semester" required value="<%= result.semester || 'Semester 5' %>" class="mt-2 w-full rounded-xl border border-[#dce5f1] bg-[#fbfcff] px-4 py-3 text-[#172b45] outline-none transition focus:border-[#5038ff] focus:ring-2 focus:ring-[#5038ff]/10">
+            </label>
+          </div>
+        </section>
+
+        <div class="border-t border-[#e3eaf4]"></div>
+
+        <section>
+          <div class="mb-5">
+            <h3 class="flex items-center gap-2 font-bold text-[#172b45]">
+              <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#5038ff]/10 text-sm text-[#5038ff]">02</span>
+              Subject Marks
+            </h3>
+            <p class="ml-10 mt-1 text-xs text-[#7185a5]">Enter marks between 0 and 100.</p>
+          </div>
+
+          <div class="grid gap-5 sm:grid-cols-2">
+            <label class="text-sm font-semibold text-[#526987]">Computer Networks
+              <input type="number" name="computerNetworks" min="0" max="100" required value="<%= result.marks?.computerNetworks ?? 0 %>" class="mt-2 w-full rounded-xl border border-[#dce5f1] bg-[#fbfcff] px-4 py-3 text-[#172b45] outline-none transition focus:border-[#5038ff] focus:ring-2 focus:ring-[#5038ff]/10">
+            </label>
+
+            <label class="text-sm font-semibold text-[#526987]">Database
+              <input type="number" name="database" min="0" max="100" required value="<%= result.marks?.database ?? 0 %>" class="mt-2 w-full rounded-xl border border-[#dce5f1] bg-[#fbfcff] px-4 py-3 text-[#172b45] outline-none transition focus:border-[#5038ff] focus:ring-2 focus:ring-[#5038ff]/10">
+            </label>
+
+            <label class="text-sm font-semibold text-[#526987]">Web Development
+              <input type="number" name="webDevelopment" min="0" max="100" required value="<%= result.marks?.webDevelopment ?? 0 %>" class="mt-2 w-full rounded-xl border border-[#dce5f1] bg-[#fbfcff] px-4 py-3 text-[#172b45] outline-none transition focus:border-[#5038ff] focus:ring-2 focus:ring-[#5038ff]/10">
+            </label>
+
+            <label class="text-sm font-semibold text-[#526987]">Java
+              <input type="number" name="java" min="0" max="100" required value="<%= result.marks?.java ?? 0 %>" class="mt-2 w-full rounded-xl border border-[#dce5f1] bg-[#fbfcff] px-4 py-3 text-[#172b45] outline-none transition focus:border-[#5038ff] focus:ring-2 focus:ring-[#5038ff]/10">
+            </label>
+
+            <label class="text-sm font-semibold text-[#526987] sm:col-span-2">Software Engineering
+              <input type="number" name="softwareEngineering" min="0" max="100" required value="<%= result.marks?.softwareEngineering ?? 0 %>" class="mt-2 w-full rounded-xl border border-[#dce5f1] bg-[#fbfcff] px-4 py-3 text-[#172b45] outline-none transition focus:border-[#5038ff] focus:ring-2 focus:ring-[#5038ff]/10">
+            </label>
+          </div>
+        </section>
+
+        <div id="message" class="hidden rounded-xl border px-4 py-3 text-sm" role="status"></div>
+
+        <div class="flex flex-col-reverse gap-3 border-t border-[#e3eaf4] pt-6 sm:flex-row sm:justify-end">
+          <a href="/admin" class="rounded-xl border border-[#dce5f1] bg-white px-6 py-3 text-center text-sm font-semibold text-[#526987] transition hover:bg-[#f4f7fc]">Cancel</a>
+          <button id="saveBtn" type="submit" class="rounded-xl bg-[#5038ff] px-7 py-3 text-sm font-bold text-white shadow-lg shadow-[#5038ff]/15 transition hover:bg-[#4026ed] disabled:cursor-not-allowed disabled:opacity-50">Save Changes →</button>
+        </div>
+      </form>
+    </div>
+
+    <p class="mt-6 text-center text-xs text-[#9aabc1]">ResultShield · Admin Control Center</p>
+  </main>
+
+  <script>
+    const form = document.getElementById('editForm');
+    const message = document.getElementById('message');
+    const saveBtn = document.getElementById('saveBtn');
+    const resultId = form.dataset.id;
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+
+      message.className = 'rounded-xl border border-[#5038ff]/20 bg-[#5038ff]/5 px-4 py-3 text-sm text-[#5038ff]';
+      message.textContent = 'Saving changes...';
+      message.classList.remove('hidden');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving...';
+
+      const data = Object.fromEntries(new FormData(form).entries());
+
+      data.marks = {
+        computerNetworks: Number(data.computerNetworks),
+        database: Number(data.database),
+        webDevelopment: Number(data.webDevelopment),
+        java: Number(data.java),
+        softwareEngineering: Number(data.softwareEngineering)
+      };
+
+      try {
+        const response = await fetch('/api/admin/results/' + encodeURIComponent(resultId), {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || 'Unable to update result.');
+        }
+
+        message.className = 'rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700';
+        message.textContent = '✓ Result updated successfully! Redirecting...';
+
+        setTimeout(() => window.location.href = '/admin', 900);
+      } catch (error) {
+        message.className = 'rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600';
+        message.textContent = error.message || 'Something went wrong.';
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Changes →';
+      }
+    });
+  </script>
+</body>
+</html>

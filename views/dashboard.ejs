@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ResultShield | Health Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{font-family:'DM Sans',sans-serif}
+h1,h2,h3{font-family:'Manrope',sans-serif}
+body{background:#f5f6ff}
+.soft-card{box-shadow:0 10px 30px rgba(49,46,129,.06)}
+button:disabled{cursor:not-allowed}
+</style>
+</head>
+
+<body class="min-h-screen text-slate-800">
+
+<nav class="sticky top-0 z-20 border-b border-indigo-100 bg-white/90 backdrop-blur-xl">
+  <div class="flex w-full flex-wrap items-center justify-between gap-4 px-5 py-4 sm:px-8 lg:px-12">
+    <a href="/" class="flex items-center gap-3">
+      <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-600 text-xl font-extrabold text-white shadow-lg shadow-indigo-200">R</div>
+      <div>
+        <h1 class="text-xl font-extrabold tracking-tight text-slate-900">ResultShield</h1>
+        <p class="text-xs font-bold text-indigo-600">SYSTEM HEALTH</p>
+      </div>
+    </a>
+    <div class="flex flex-wrap items-center gap-3">
+      <a href="/admin" class="rounded-xl px-3 py-2 text-sm font-bold text-slate-600 transition hover:bg-indigo-50 hover:text-indigo-700">Admin Panel →</a>
+      <a href="/" class="rounded-xl border border-indigo-100 bg-indigo-50 px-3 py-2 text-sm font-bold text-indigo-700 transition hover:bg-indigo-100">← Student Portal</a>
+    </div>
+  </div>
+</nav>
+
+<main class="w-full px-4 py-6 sm:px-8 sm:py-10 lg:px-12 xl:px-16">
+
+  <section class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-700 via-indigo-600 to-violet-600 p-6 text-white shadow-xl shadow-indigo-200 sm:p-10 lg:p-12">
+    <div class="pointer-events-none absolute -right-10 -top-20 h-60 w-60 rounded-full bg-white/10 blur-2xl"></div>
+    <div class="relative flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+      <div>
+        <span class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-blue-50">
+          <span class="h-2 w-2 rounded-full bg-emerald-300"></span> Reliability Control Room
+        </span>
+        <h2 class="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">System Health Dashboard</h2>
+        <p class="mt-3 max-w-2xl text-sm leading-6 text-indigo-100">Monitor system components, test controlled failures and observe automatic recovery in real time.</p>
+      </div>
+      <div id="overall" class="w-fit rounded-full border border-white/20 bg-white/10 px-4 py-2.5 text-sm font-bold text-white">Connecting...</div>
+    </div>
+    <p class="relative mt-5 text-xs text-indigo-100/80">Live monitoring refreshes every 2 seconds. Chaos controls are intended for local demonstrations.</p>
+  </section>
+
+  <section id="autoHealingBanner" class="soft-card mt-6 hidden rounded-2xl border border-blue-200 bg-blue-50 p-5" role="status" aria-live="polite">
+    <div class="flex items-start gap-4">
+      <div class="mt-1 h-7 w-7 shrink-0 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600"></div>
+      <div>
+        <p class="font-extrabold text-blue-900">Failure Detected — Automatic Healing in Progress</p>
+        <p id="autoHealingDetail" class="mt-1 text-sm leading-6 text-blue-700">The controller is recovering the simulated service.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+    <div class="soft-card rounded-2xl border border-blue-100 bg-white p-5 transition hover:-translate-y-1">
+      <div class="flex items-center justify-between">
+        <p class="text-sm font-bold text-slate-500">Recoveries</p>
+        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-xl text-blue-600">↻</span>
+      </div>
+      <b id="recoveries" class="mt-4 block text-3xl font-extrabold text-blue-700">—</b>
+      <p class="mt-2 text-xs text-slate-400">Recovery actions completed</p>
+    </div>
+    <div class="soft-card rounded-2xl border border-indigo-100 bg-white p-5 transition hover:-translate-y-1">
+      <div class="flex items-center justify-between">
+        <p class="text-sm font-bold text-slate-500">Requests Handled</p>
+        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 text-xl text-indigo-600">⇄</span>
+      </div>
+      <b id="requests" class="mt-4 block text-3xl font-extrabold text-indigo-700">—</b>
+      <p class="mt-2 text-xs text-slate-400">Requests processed by app</p>
+    </div>
+    <div class="soft-card rounded-2xl border border-violet-100 bg-white p-5 transition hover:-translate-y-1">
+      <div class="flex items-center justify-between">
+        <p class="text-sm font-bold text-slate-500">Cached Results</p>
+        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-xl text-violet-600">▤</span>
+      </div>
+      <b id="cache" class="mt-4 block text-3xl font-extrabold text-violet-700">—</b>
+      <p class="mt-2 text-xs text-slate-400">Results available in cache</p>
+    </div>
+    <div class="soft-card rounded-2xl border border-emerald-100 bg-white p-5 transition hover:-translate-y-1">
+      <div class="flex items-center justify-between">
+        <p class="text-sm font-bold text-slate-500">App Uptime</p>
+        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-xl text-emerald-600">◷</span>
+      </div>
+      <b id="uptime" class="mt-4 block text-3xl font-extrabold text-emerald-700">—</b>
+      <p class="mt-2 text-xs text-slate-400">Current running duration</p>
+    </div>
+    <div class="soft-card rounded-2xl border border-amber-100 bg-white p-5 transition hover:-translate-y-1">
+      <div class="flex items-center justify-between">
+        <p class="text-sm font-bold text-slate-500">Rate-Limit Events</p>
+        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-xl text-amber-600">⚡</span>
+      </div>
+      <b id="limits" class="mt-4 block text-3xl font-extrabold text-amber-700">—</b>
+      <p class="mt-2 text-xs text-slate-400">Requests blocked by limiter</p>
+    </div>
+  </section>
+
+  <section class="mt-9">
+    <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <p class="text-xs font-extrabold uppercase tracking-[.2em] text-indigo-600">Live Monitoring</p>
+        <h2 class="mt-1 text-2xl font-extrabold text-slate-900">Component Status</h2>
+      </div>
+      <div class="flex flex-wrap gap-2 text-xs font-bold">
+        <span class="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-emerald-700">● Healthy</span>
+        <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-amber-700">● Degraded</span>
+        <span class="rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-rose-700">● Down</span>
+      </div>
+    </div>
+    <div id="components" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <p class="text-sm text-slate-400">Loading health checks...</p>
+    </div>
+  </section>
+
+  <section class="soft-card mt-9 rounded-3xl border border-indigo-100 bg-white p-5 sm:p-7">
+    <div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+      <div>
+        <p class="text-xs font-extrabold uppercase tracking-[.2em] text-violet-600">Failure Simulation Lab</p>
+        <h2 class="mt-1 text-2xl font-extrabold text-slate-900">Chaos Lab</h2>
+        <p class="mt-2 text-sm text-slate-500">Trigger controlled failures and observe detection and recovery.</p>
+      </div>
+      <span class="w-fit rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-700">Local Demo Only</span>
+    </div>
+
+    <div class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <button onclick="chaos('database-on')" class="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-left transition hover:-translate-y-0.5 hover:border-amber-300 hover:shadow-md">
+        <span class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-xl text-amber-700">⚠</span>
+        <b class="block text-sm text-slate-800">1. Simulate Database Failure</b>
+        <small class="mt-1 block leading-5 text-slate-500">Disable result database reads.</small>
+      </button>
+
+      <button onclick="chaos('database-off')" class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-left transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md">
+        <span class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-xl text-emerald-700">✓</span>
+        <b class="block text-sm text-slate-800">Restore Database</b>
+        <small class="mt-1 block leading-5 text-slate-500">Allow database reads again.</small>
+      </button>
+
+      <button onclick="chaos('external-on')" class="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-left transition hover:-translate-y-0.5 hover:border-rose-300 hover:shadow-md">
+        <span class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-rose-100 text-xl text-rose-700">!</span>
+        <b class="block text-sm text-slate-800">2. Fail External Service</b>
+        <small class="mt-1 block leading-5 text-slate-500">Simulate an external service timeout.</small>
+      </button>
+
+      <button onclick="checkExternal()" class="rounded-2xl border border-blue-200 bg-blue-50 p-4 text-left transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md">
+        <span class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 text-xl text-blue-700">↗</span>
+        <b class="block text-sm text-slate-800">Call External Service</b>
+        <small class="mt-1 block leading-5 text-slate-500">Test retries and circuit breaker.</small>
+      </button>
+
+      <button onclick="chaos('external-off')" class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-left transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md">
+        <span class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-xl text-emerald-700">✓</span>
+        <b class="block text-sm text-slate-800">Restore External Service</b>
+        <small class="mt-1 block leading-5 text-slate-500">Clear the simulated service failure.</small>
+      </button>
+
+      <button onclick="chaos('result-hang-on')" class="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-left transition hover:-translate-y-0.5 hover:border-amber-300 hover:shadow-md">
+        <span class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-xl text-amber-700">◷</span>
+        <b class="block text-sm text-slate-800">5. Simulate Result Loading Hang</b>
+        <small class="mt-1 block leading-5 text-slate-500">Activate the result loading failure.</small>
+      </button>
+
+      <button onclick="chaos('result-hang-off')" class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-left transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md">
+        <span class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-xl text-emerald-700">✓</span>
+        <b class="block text-sm text-slate-800">Restore Result Loading</b>
+        <small class="mt-1 block leading-5 text-slate-500">Remove the loading failure simulation.</small>
+      </button>
+
+      <button id="trafficButton" onclick="loadTest()" class="rounded-2xl border border-indigo-200 bg-indigo-50 p-4 text-left transition hover:-translate-y-0.5 hover:border-indigo-300 hover:shadow-md">
+        <span class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-xl text-indigo-700">⚡</span>
+        <b class="block text-sm text-slate-800">3. Traffic Burst Test</b>
+        <small class="mt-1 block leading-5 text-slate-500">Send 80 parallel health requests.</small>
+      </button>
+
+      <button onclick="crashApp()" class="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-left transition hover:-translate-y-0.5 hover:border-rose-300 hover:shadow-md ">
+        <span class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-rose-100 text-xl text-rose-700">⏻</span>
+        <b class="block text-sm text-slate-800">4. Crash App Process (PM2 Demo)</b>
+        <small class="mt-1 block leading-5 text-slate-500">Only use when PM2 is managing ResultShield.</small>
+      </button>
+    </div>
+
+    <p id="chaosMessage" class="mt-5 rounded-xl border border-indigo-100 bg-indigo-50 px-4 py-3 text-sm font-semibold text-indigo-800" aria-live="polite">Ready for a test.</p>
+
+    <div class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-4">
+        <p class="text-sm font-semibold text-slate-500">Last Burst · Successful</p>
+        <b id="burstSuccess" class="mt-2 block text-2xl font-extrabold text-emerald-700">—</b>
+      </div>
+      <div class="rounded-2xl border border-amber-100 bg-amber-50/70 p-4">
+        <p class="text-sm font-semibold text-slate-500">Rate Limited (HTTP 429)</p>
+        <b id="burstBlocked" class="mt-2 block text-2xl font-extrabold text-amber-700">—</b>
+      </div>
+      <div class="rounded-2xl border border-rose-100 bg-rose-50/70 p-4">
+        <p class="text-sm font-semibold text-slate-500">Other HTTP Errors</p>
+        <b id="burstErrors" class="mt-2 block text-2xl font-extrabold text-rose-700">—</b>
+      </div>
+      <div class="rounded-2xl border border-blue-100 bg-blue-50/70 p-4">
+        <p class="text-sm font-semibold text-slate-500">Test Duration</p>
+        <b id="burstTime" class="mt-2 block text-2xl font-extrabold text-blue-700">—</b>
+      </div>
+    </div>
+    <p class="mt-3 text-xs leading-5 text-slate-400">Burst results are from the latest test in this browser session. HTTP 429 means a request was rate-limited; other failures are counted separately.</p>
+  </section>
+
+  <section class="mt-9">
+    <div class="mb-4">
+      <p class="text-xs font-extrabold uppercase tracking-[.2em] text-indigo-600">System Activity</p>
+      <h2 class="mt-1 text-2xl font-extrabold text-slate-900">Incident Timeline</h2>
+      <p class="mt-1 text-sm text-slate-500">Detection, diagnosis and recovery events.</p>
+    </div>
+
+    <div class="soft-card overflow-hidden rounded-2xl border border-indigo-100 bg-white">
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[700px] text-left text-sm">
+          <thead class="border-b border-slate-100 bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
+            <tr>
+              <th class="p-4 font-extrabold">Time</th>
+              <th class="p-4 font-extrabold">Component</th>
+              <th class="p-4 font-extrabold">Stage</th>
+              <th class="p-4 font-extrabold">Incident Details</th>
+            </tr>
+          </thead>
+          <tbody id="incidents">
+            <tr><td colspan="4" class="p-6 text-center text-slate-400">Loading incidents...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <p id="lastError" class="mt-4 text-sm font-semibold text-rose-600" role="status"></p>
+
+  <footer class="mt-10 border-t border-indigo-100 py-6 text-center text-xs text-slate-400">
+    ResultShield <span class="mx-1 text-indigo-300">•</span> Self-Healing Student Result System
+  </footer>
+</main>
+
+<script>
+const statusStyles = {
+  healthy: 'border-emerald-200 bg-emerald-50 text-emerald-700',
+  degraded: 'border-amber-200 bg-amber-50 text-amber-700',
+  down: 'border-rose-200 bg-rose-50 text-rose-700'
+};
+
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[c]));
+}
+
+function numberValue(value) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n.toLocaleString() : '0';
+}
+
+function formatUptime(value) {
+  const total = Math.max(0, Number(value) || 0);
+  const hours = Math.floor(total / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  const seconds = Math.floor(total % 60);
+  if (hours) return `${hours}h ${minutes}m`;
+  if (minutes) return `${minutes}m ${seconds}s`;
+  return `${seconds}s`;
+}
+
+async function refresh() {
+  const overall = document.getElementById('overall');
+
+  try {
+    const response = await fetch('/api/health', { cache: 'no-store' });
+    if (!response.ok) throw new Error(`Health API returned HTTP ${response.status}`);
+
+    const d = await response.json();
+    if (!d || typeof d !== 'object') throw new Error('Invalid health response');
+
+    const healingBanner = document.getElementById('autoHealingBanner');
+    if (d.autoFailureActive) {
+      healingBanner.classList.remove('hidden');
+      document.getElementById('autoHealingDetail').textContent =
+        `Recovering from ${d.autoFailureType || 'system'} failure. Automatic recovery is expected within 5–10 seconds.`;
+    } else {
+      healingBanner.classList.add('hidden');
+    }
+
+    const overallStatus = String(d.overall || 'degraded').toLowerCase();
+    overall.textContent = overallStatus === 'healthy'
+      ? '● All systems operational'
+      : overallStatus === 'down'
+        ? '● System unavailable'
+        : '● Degraded — check components';
+
+    overall.className = 'w-fit rounded-full border px-4 py-2.5 text-sm font-bold ' +
+      (statusStyles[overallStatus] || statusStyles.degraded);
+
+    document.getElementById('recoveries').textContent = numberValue(d.recoveries);
+    document.getElementById('requests').textContent = numberValue(d.requestCount ?? d.requestsHandled);
+    document.getElementById('cache').textContent = numberValue(d.cacheEntries ?? d.cachedResults);
+    document.getElementById('uptime').textContent = formatUptime(d.uptimeSeconds);
+    document.getElementById('limits').textContent = numberValue(d.rateLimitEvents);
+
+    const components = Array.isArray(d.components) ? d.components : [];
+    document.getElementById('components').innerHTML = components.length
+      ? components.map(c => {
+          const status = String(c.status || 'degraded').toLowerCase();
+          const badge = statusStyles[status] || statusStyles.degraded;
+          const icon = status === 'healthy' ? '✓' : status === 'down' ? '!' : '⚠';
+          const iconStyle = status === 'healthy'
+            ? 'bg-emerald-50 text-emerald-700'
+            : status === 'down'
+              ? 'bg-rose-50 text-rose-700'
+              : 'bg-amber-50 text-amber-700';
+
+          return `<article class="soft-card rounded-2xl border border-indigo-100 bg-white p-5 transition hover:-translate-y-0.5 hover:shadow-lg">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex min-w-0 items-center gap-3">
+                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${iconStyle} text-lg font-extrabold">${icon}</span>
+                <b class="break-words text-sm font-extrabold text-slate-800">${escapeHtml(c.name || 'Unknown component')}</b>
+              </div>
+              <span class="shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-extrabold tracking-wide ${badge}">${escapeHtml(status.toUpperCase())}</span>
+            </div>
+            <p class="mt-4 text-sm leading-6 text-slate-500">${escapeHtml(c.detail || 'No details available')}</p>
+          </article>`;
+        }).join('')
+      : '<p class="rounded-2xl border border-slate-200 bg-white p-5 text-sm text-slate-500">No component data returned by the health API.</p>';
+
+    const incidents = Array.isArray(d.incidents) ? d.incidents : [];
+    document.getElementById('incidents').innerHTML = incidents.length
+      ? incidents.map(i => `<tr class="border-b border-slate-100 align-top transition hover:bg-indigo-50/60">
+          <td class="whitespace-nowrap p-4 text-slate-500">${escapeHtml(i.time ? new Date(i.time).toLocaleTimeString() : '—')}</td>
+          <td class="p-4 font-bold text-slate-800">${escapeHtml(i.component || 'Unknown')}</td>
+          <td class="p-4"><span class="inline-block rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-bold text-indigo-700">${escapeHtml(i.status || '—')}</span></td>
+          <td class="p-4 leading-6 text-slate-600">${escapeHtml(i.message || '')}</td>
+        </tr>`).join('')
+      : '<tr><td colspan="4" class="p-6 text-center text-slate-400">No incidents recorded yet.</td></tr>';
+
+    document.getElementById('lastError').textContent =
+      d.lastError ? 'Latest application error: ' + d.lastError : '';
+  } catch (error) {
+    overall.textContent = '● Dashboard disconnected';
+    overall.className = 'w-fit rounded-full border border-rose-200 bg-rose-50 px-4 py-2.5 text-sm font-bold text-rose-700';
+    document.getElementById('lastError').textContent =
+      'Health check failed: ' + error.message;
+  }
+}
+
+async function chaos(type) {
+  const out = document.getElementById('chaosMessage');
+  out.textContent = 'Applying ' + type + '...';
+
+  try {
+    const r = await fetch('/api/chaos/' + encodeURIComponent(type), {
+      method: 'POST',
+      cache: 'no-store'
+    });
+
+    const d = await r.json().catch(() => ({}));
+    out.textContent = d.message || d.error || `Request returned HTTP ${r.status}.`;
+    await refresh();
+  } catch (e) {
+    out.textContent = 'Request failed: ' + e.message;
+  }
+}
+
+async function checkExternal() {
+  const out = document.getElementById('chaosMessage');
+  out.textContent = 'Checking external service...';
+
+  try {
+    const r = await fetch('/api/external-check', { cache: 'no-store' });
+    const d = await r.json().catch(() => ({}));
+    out.textContent = r.ok
+      ? (d.message || 'External service check completed.')
+      : (d.error || d.message || `HTTP ${r.status}`) +
+        ' — circuit ' + (d.circuitOpen ? 'OPEN' : 'not open yet');
+    await refresh();
+  } catch (e) {
+    out.textContent = 'External check failed: ' + e.message;
+  }
+}
+
+async function loadTest() {
+  const out = document.getElementById('chaosMessage');
+  const button = document.getElementById('trafficButton');
+
+  button.disabled = true;
+  button.classList.add('opacity-50', 'cursor-not-allowed');
+  out.textContent = 'Sending 80 parallel requests and measuring HTTP responses...';
+
+  const start = performance.now();
+
+  try {
+    const results = await Promise.allSettled(
+      Array.from({ length: 80 }, () =>
+        fetch('/api/chaos/traffic', {
+          method: 'GET',
+          cache: 'no-store'
+        })
+      )
+    );
+
+    const elapsed = Math.round(performance.now() - start);
+    let successful = 0;
+    let blocked = 0;
+    let otherErrors = 0;
+    let networkErrors = 0;
+
+    for (const result of results) {
+      if (result.status === 'rejected') {
+        networkErrors++;
+        continue;
+      }
+
+      const response = result.value;
+
+      if (response.status === 429) {
+        blocked++;
+      } else if (response.ok) {
+        successful++;
+      } else {
+        otherErrors++;
+      }
+    }
+
+    otherErrors += networkErrors;
+
+    document.getElementById('burstSuccess').textContent = successful;
+    document.getElementById('burstBlocked').textContent = blocked;
+    document.getElementById('burstErrors').textContent = otherErrors;
+    document.getElementById('burstTime').textContent = elapsed + ' ms';
+
+    out.textContent =
+      `Traffic burst completed: ${successful} successful, ${blocked} rate-limited (HTTP 429), ${otherErrors} other/network errors, in ${elapsed} ms.`;
+
+    await refresh();
+  } catch (e) {
+    out.textContent = 'Traffic test failed: ' + e.message;
+  } finally {
+    button.disabled = false;
+    button.classList.remove('opacity-50', 'cursor-not-allowed');
+  }
+}
+
+async function crashApp() {
+  if (!confirm('This will terminate the app process. Continue only if PM2 is managing ResultShield.')) return;
+
+  try {
+    const r = await fetch('/api/chaos/crash', { method: 'POST' });
+    const d = await r.json().catch(() => ({}));
+    document.getElementById('chaosMessage').textContent =
+      d.message || 'Process may be restarting. Refresh after a few seconds.';
+  } catch (e) {
+    document.getElementById('chaosMessage').textContent =
+      'Process may be restarting. Refresh after a few seconds.';
+  }
+}
+
+refresh();
+setInterval(refresh, 2000);
+</script>
+
+</body>
+</html>
