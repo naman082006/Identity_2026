@@ -26,7 +26,7 @@ ResultShield is a self-healing software system designed to detect failures, moni
 ## 🚀 Getting Started
 
 ```bash
-git clone YOUR_GITHUB_REPOSITORY_URL
+git clone https://github.com/naman082006/Identity_2026.git
 cd resultshield
 npm install
 node server.js
