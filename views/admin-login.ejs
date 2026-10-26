@@ -4,93 +4,268 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#5038ff">
   <title>ResultShield | Admin Login</title>
+
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
-    body { font-family: 'DM Sans', sans-serif; }
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #f4f7fc;
+    }
+
     .heading { font-family: 'Manrope', sans-serif; }
 
     .login-bg {
       background:
-        radial-gradient(ellipse at top left, rgba(80,56,255,.14), transparent 45%),
-        radial-gradient(ellipse at bottom right, rgba(80,56,255,.10), transparent 45%),
-        #f4f7fc;
+        radial-gradient(ellipse at 10% 10%, rgba(80,56,255,.12), transparent 40%),
+        radial-gradient(ellipse at 90% 90%, rgba(167,139,250,.15), transparent 42%),
+        linear-gradient(135deg, #f4f7fc 0%, #f8f7ff 50%, #eef2ff 100%);
     }
 
     .login-card {
       animation: appear .65s ease-out both;
+      box-shadow: 0 30px 90px -35px rgba(49,46,129,.30);
     }
 
     @keyframes appear {
-      from { opacity: 0; transform: translateY(18px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translateY(22px) scale(.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    .lock-icon {
-      background: linear-gradient(135deg, #5038ff, #765dff);
+    .brand-icon {
+      background: linear-gradient(135deg, #5038ff, #927aff);
       box-shadow: 0 12px 28px rgba(80,56,255,.25);
+    }
+
+    .input-wrap {
+      transition: border-color .2s, box-shadow .2s, background .2s;
+    }
+
+    .input-wrap:focus-within {
+      border-color: #7055ff;
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(80,56,255,.09);
+    }
+
+    .login-button {
+      background: linear-gradient(110deg, #5038ff, #7055ff, #927aff);
+      background-size: 200% 100%;
+      transition: background-position .3s, transform .2s, box-shadow .2s;
+    }
+
+    .login-button:hover {
+      background-position: 100% 0;
+      transform: translateY(-2px);
+      box-shadow: 0 14px 28px rgba(80,56,255,.25);
+    }
+
+    .login-button:active { transform: translateY(0); }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(2px);
+      animation: float 9s ease-in-out infinite;
+    }
+
+    .orb-one {
+      width: 280px;
+      height: 280px;
+      top: 3%;
+      left: -120px;
+      background: radial-gradient(circle, rgba(80,56,255,.12), transparent 70%);
+    }
+
+    .orb-two {
+      width: 320px;
+      height: 320px;
+      bottom: 0;
+      right: -130px;
+      background: radial-gradient(circle, rgba(167,139,250,.18), transparent 70%);
+      animation-delay: -4s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) translateX(0); }
+      50% { transform: translateY(-18px) translateX(10px); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
     }
   </style>
 </head>
 
-<body class="login-bg flex min-h-screen items-center justify-center px-5 py-10 text-[#172b45]">
+<body class="login-bg relative flex min-h-screen items-center justify-center overflow-x-hidden px-4 py-8 text-[#172b45] sm:px-6">
 
-  <main class="login-card w-full max-w-2xl">
+  <div class="orb orb-one"></div>
+  <div class="orb orb-two"></div>
 
-    <div class="overflow-hidden rounded-[2rem] border border-white bg-white shadow-2xl shadow-indigo-900/10">
+  <main class="relative z-10 w-full max-w-5xl">
 
-      <div class="h-2 bg-gradient-to-r from-[#5038ff] via-[#795cff] to-[#a78bfa]"></div>
+    <div class="mb-6 flex items-center justify-center gap-3 sm:justify-start">
+      <div class="brand-icon flex h-12 w-12 items-center justify-center rounded-2xl text-xl font-extrabold text-white">R</div>
+      <div>
+        <p class="heading text-xl font-extrabold tracking-tight text-[#172b45]">
+          Result<span class="bg-gradient-to-r from-[#5038ff] to-[#927aff] bg-clip-text text-transparent">Shield</span>
+        </p>
+        <p class="text-xs tracking-wide text-[#7185a5]">RELIABLE RESULTS. RESILIENT SYSTEMS.</p>
+      </div>
+    </div>
 
-      <div class="px-7 py-9 sm:px-12 sm:py-11 lg:px-16">
+    <div class="login-card grid overflow-hidden rounded-[2rem] border border-white bg-white lg:grid-cols-[.92fr_1.08fr]">
 
-        <div class="mb-9 text-center">
+      <!-- LEFT INFORMATION PANEL -->
+      <section class="relative hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-[#3520c9] via-[#5038ff] to-[#7862ff] p-10 text-white lg:flex xl:p-12">
 
-          <div class="lock-icon mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-3xl text-white">
-            <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <div class="absolute -right-20 -top-20 h-64 w-64 rounded-full border border-white/10"></div>
+        <div class="absolute -right-10 -top-10 h-44 w-44 rounded-full border border-white/10"></div>
+        <div class="absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-white/[0.05]"></div>
+
+        <div class="relative">
+          <div class="mb-8 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-2 text-xs font-bold text-white">
+            <span class="h-2 w-2 animate-pulse rounded-full bg-emerald-300"></span>
+            SYSTEM CONTROL CENTER
+          </div>
+
+          <h1 class="heading text-4xl font-extrabold leading-tight xl:text-5xl">
+            Control.<br>
+            Monitor.<br>
+            <span class="text-violet-200">Recover.</span>
+          </h1>
+
+          <p class="mt-5 max-w-sm text-sm leading-7 text-indigo-100">
+            Manage student results and monitor system health from one secure administrative workspace.
+          </p>
+        </div>
+
+        <div class="relative mt-12 space-y-4">
+
+          <div class="flex items-center gap-4 rounded-2xl border border-white/15 bg-white/[0.08] p-4 backdrop-blur-sm">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/10 text-white">
+              <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z"/>
+                <path d="m9 12 2 2 4-4"/>
+              </svg>
+            </div>
+            <div>
+              <p class="font-bold">Secure Administration</p>
+              <p class="mt-1 text-xs text-indigo-100/80">Protected access to admin features</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-4 rounded-2xl border border-white/15 bg-white/[0.08] p-4 backdrop-blur-sm">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/10 text-white">
+              <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 7v5h-5"/>
+                <path d="M4 17v-5h5"/>
+                <path d="M5.6 9a7 7 0 0 1 11.6-2L20 12"/>
+                <path d="M4 12l2.8 5a7 7 0 0 0 11.6-2"/>
+              </svg>
+            </div>
+            <div>
+              <p class="font-bold">Self-Healing System</p>
+              <p class="mt-1 text-xs text-indigo-100/80">Detect failures and restore services</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-4 rounded-2xl border border-white/15 bg-white/[0.08] p-4 backdrop-blur-sm">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/10 text-white">
+              <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 3v18h18"/>
+                <path d="m19 9-5 5-4-4-4 4"/>
+              </svg>
+            </div>
+            <div>
+              <p class="font-bold">Live Health Monitoring</p>
+              <p class="mt-1 text-xs text-indigo-100/80">Monitor service availability</p>
+            </div>
+          </div>
+
+          <p class="pt-5 text-xs text-indigo-100/60">BCA Third-Year Identity Project</p>
+        </div>
+      </section>
+
+      <!-- LOGIN PANEL -->
+      <section class="bg-white px-6 py-9 sm:px-10 sm:py-12 xl:px-14">
+
+        <div class="mb-8 lg:hidden">
+          <div class="brand-icon mb-5 flex h-16 w-16 items-center justify-center rounded-2xl text-white">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <rect x="4" y="10" width="16" height="11" rx="2.5"/>
               <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
               <circle cx="12" cy="15" r="1.2" fill="currentColor"/>
-              <path d="M12 16.5V18"/>
             </svg>
           </div>
+          <p class="text-xs font-bold uppercase tracking-[.22em] text-[#5038ff]">Admin Portal</p>
+        </div>
 
-          <h1 class="heading text-3xl font-extrabold tracking-tight text-[#172b45] sm:text-4xl">
-            Result<span class="bg-gradient-to-r from-[#5038ff] to-[#927aff] bg-clip-text text-transparent">Shield</span>
-          </h1>
+        <div class="mb-8">
+          <p class="mb-3 hidden text-xs font-bold uppercase tracking-[.2em] text-[#7055ff] lg:block">
+            WELCOME BACK
+          </p>
 
-          <p class="mt-3 text-sm text-[#7185a5] sm:text-base">Welcome back, Administrator</p>
+          <h2 class="heading text-3xl font-extrabold tracking-tight text-[#172b45] sm:text-4xl">
+            Admin Login
+          </h2>
 
-          <div class="mt-5 inline-flex items-center gap-2 rounded-full border border-[#e4dfff] bg-[#f4f1ff] px-4 py-2 text-xs font-bold uppercase tracking-widest text-[#5038ff]">
-            <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+          <p class="mt-3 text-sm leading-6 text-[#7185a5]">
+            Sign in to access your ResultShield dashboard.
+          </p>
+
+          <div class="mt-5 inline-flex items-center gap-2 rounded-full border border-[#e4dfff] bg-[#f4f1ff] px-3 py-2 text-xs font-bold text-[#5038ff]">
+            <span class="h-2 w-2 animate-pulse rounded-full bg-emerald-500"></span>
             Secure Admin Access
           </div>
-
         </div>
 
         <% if (typeof error !== 'undefined' && error) { %>
-          <p class="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-600">
-            <%= error %>
-          </p>
+          <div role="alert" class="mb-6 flex items-start gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
+            <svg class="mt-0.5 shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 8v4m0 4h.01"/>
+            </svg>
+            <div>
+              <p class="font-bold">Login unsuccessful</p>
+              <p class="mt-1"><%= error %></p>
+            </div>
+          </div>
         <% } %>
 
-        <form action="/admin/login" method="POST" class="space-y-6">
+        <form id="loginForm" action="/admin/login" method="POST" class="space-y-5">
 
           <div>
             <label for="username" class="mb-2.5 block text-sm font-bold text-[#526987]">
               Username
             </label>
 
-            <input
-              id="username"
-              name="username"
-              type="text"
-              required
-              autocomplete="username"
-              placeholder="Enter admin username"
-              class="w-full rounded-xl border border-[#dce5f1] bg-[#f8f9ff] px-5 py-4 text-base text-[#172b45] outline-none transition placeholder:text-[#9aabc1] hover:border-[#bcb2ff] focus:border-[#5038ff] focus:bg-white focus:ring-4 focus:ring-[#5038ff]/10"
-            >
+            <div class="input-wrap flex items-center gap-3 rounded-2xl border border-[#dce5f1] bg-[#f8f9ff] px-4">
+              <svg class="shrink-0 text-[#8b9bb5]" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="8" r="4"/>
+                <path d="M5 21v-2a7 7 0 0 1 14 0v2"/>
+              </svg>
+              <input
+                id="username"
+                name="username"
+                type="text"
+                required
+                autocomplete="username"
+                placeholder="Enter admin username"
+                class="min-w-0 w-full bg-transparent py-4 text-sm text-[#172b45] outline-none placeholder:text-[#9aabc1]"
+              >
+            </div>
           </div>
 
           <div>
@@ -98,23 +273,46 @@
               Password
             </label>
 
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              autocomplete="current-password"
-              placeholder="Enter admin password"
-              class="w-full rounded-xl border border-[#dce5f1] bg-[#f8f9ff] px-5 py-4 text-base text-[#172b45] outline-none transition placeholder:text-[#9aabc1] hover:border-[#bcb2ff] focus:border-[#5038ff] focus:bg-white focus:ring-4 focus:ring-[#5038ff]/10"
-            >
+            <div class="input-wrap flex items-center gap-3 rounded-2xl border border-[#dce5f1] bg-[#f8f9ff] px-4">
+              <svg class="shrink-0 text-[#8b9bb5]" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="4" y="10" width="16" height="11" rx="2.5"/>
+                <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+              </svg>
+
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                autocomplete="current-password"
+                placeholder="Enter admin password"
+                class="min-w-0 w-full bg-transparent py-4 text-sm text-[#172b45] outline-none placeholder:text-[#9aabc1]"
+              >
+
+              <button
+                id="togglePassword"
+                type="button"
+                aria-label="Show password"
+                aria-pressed="false"
+                class="shrink-0 rounded-lg p-1.5 text-[#8b9bb5] transition hover:bg-[#f0edff] hover:text-[#5038ff]"
+              >
+                <svg id="eyeIcon" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
           </div>
 
           <button
+            id="loginButton"
             type="submit"
-            class="group w-full rounded-xl bg-gradient-to-r from-[#5038ff] to-[#7055ff] py-4 font-bold text-white shadow-lg shadow-[#5038ff]/25 transition duration-200 hover:-translate-y-0.5 hover:from-[#4026ed] hover:to-[#5c42f5] hover:shadow-xl active:translate-y-0"
+            class="login-button mt-3 flex w-full items-center justify-center gap-3 rounded-2xl px-5 py-4 font-bold text-white shadow-lg shadow-indigo-900/10"
           >
-            Login to Dashboard
-            <span class="ml-2 inline-block transition-transform group-hover:translate-x-1">→</span>
+            <span id="loginButtonText">Login to Dashboard</span>
+            <svg id="loginArrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14m-7-7 7 7-7 7"/>
+            </svg>
           </button>
 
         </form>
@@ -127,23 +325,57 @@
 
         <a
           href="/"
-          class="block rounded-xl border border-[#e4dfff] bg-[#f8f7ff] py-4 text-center text-sm font-bold text-[#5038ff] transition hover:border-[#c9c0ff] hover:bg-[#f0edff]"
+          class="group flex items-center justify-center gap-2 rounded-2xl border border-[#e4dfff] bg-[#f8f7ff] px-4 py-4 text-sm font-bold text-[#5038ff] transition hover:border-[#c9c0ff] hover:bg-[#f0edff]"
         >
-          ← Back to Student Portal
+          <span class="transition-transform group-hover:-translate-x-1">←</span>
+          Back to Student Portal
         </a>
 
-        <div class="mt-7 flex items-center justify-center gap-2 text-xs text-[#9aabc1]">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <div class="mt-8 flex items-center justify-center gap-2 text-xs text-[#9aabc1]">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <rect x="4" y="10" width="16" height="11" rx="2"/>
             <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
           </svg>
           Self-Healing Student Result System
         </div>
 
-      </div>
+      </section>
     </div>
 
+    <p class="mt-6 text-center text-xs text-[#7185a5]">
+      ResultShield · Reliable Results. Resilient Systems.
+    </p>
+
   </main>
+
+  <script>
+    const passwordInput = document.getElementById('password');
+    const togglePassword = document.getElementById('togglePassword');
+    const eyeIcon = document.getElementById('eyeIcon');
+    const loginForm = document.getElementById('loginForm');
+    const loginButton = document.getElementById('loginButton');
+
+    togglePassword.addEventListener('click', function () {
+      const showing = passwordInput.type === 'password';
+
+      passwordInput.type = showing ? 'text' : 'password';
+      togglePassword.setAttribute('aria-pressed', String(showing));
+      togglePassword.setAttribute('aria-label', showing ? 'Hide password' : 'Show password');
+
+      eyeIcon.innerHTML = showing
+        ? '<path d="m3 3 18 18"/><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 5.2A10.8 10.8 0 0 1 12 5c6.5 0 10 7 10 7a15 15 0 0 1-3 3.8"/><path d="M6.2 6.2C3.5 8 2 12 2 12s3.5 7 10 7a10 10 0 0 0 4-.8"/>'
+        : '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>';
+    });
+
+    loginForm.addEventListener('submit', function (event) {
+      if (!loginForm.checkValidity()) return;
+
+      loginButton.disabled = true;
+      loginButton.classList.add('opacity-80', 'cursor-wait');
+      document.getElementById('loginButtonText').textContent = 'Signing In...';
+      document.getElementById('loginArrow').style.display = 'none';
+    });
+  </script>
 
 </body>
 </html>
