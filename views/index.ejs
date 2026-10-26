@@ -25,9 +25,10 @@
 
 <body class="hero-glow min-h-screen bg-[#f5f6ff] text-slate-800"
   data-failure-name="<%= typeof failureName !== 'undefined' && failureName ? failureName : '' %>"
-  data-failure-active="<%= typeof healRequired !== 'undefined' && healRequired ? 'true' : 'false' %>">
+  data-failure-active="<%= typeof healRequired !== 'undefined' && healRequired ? 'true' : 'false' %>"
+  data-has-error="<%= typeof error !== 'undefined' && error ? 'true' : 'false' %>"
+  data-has-result="<%= typeof result !== 'undefined' && result ? 'true' : 'false' %>">
 
-  <!-- NETWORK DISCONNECTED SCREEN -->
   <section id="networkError" class="min-h-screen flex-col items-center justify-center bg-slate-950 px-6 text-center text-white">
     <div class="mb-6 grid h-24 w-24 place-items-center rounded-3xl border border-rose-400/30 bg-rose-500/10 text-5xl">📡</div>
     <p class="text-sm font-bold uppercase tracking-[0.3em] text-rose-400">ResultShield Network Monitor</p>
@@ -49,14 +50,14 @@
   <div id="mainContent">
     <nav class="sticky top-0 z-20 border-b border-indigo-100/80 bg-white/90 backdrop-blur-xl">
       <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 sm:px-8">
-        <a href="/" class="flex min-w-0 items-center gap-3">
+        <a href="/" id="homeLink" class="flex min-w-0 items-center gap-3">
           <span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-xl font-black text-white shadow-lg">R</span>
           <span>
             <b class="heading block text-lg font-extrabold text-slate-900 sm:text-xl">ResultShield</b>
             <small class="hidden text-xs text-slate-500 sm:block">Reliable Results. Resilient Systems.</small>
           </span>
         </a>
-        <a href="/dashboard" class="inline-flex items-center gap-2 rounded-xl border border-indigo-100 bg-indigo-50 px-3 py-2.5 text-xs font-bold text-indigo-700 sm:px-4 sm:text-sm">
+        <a href="/dashboard" id="dashboardLink" class="inline-flex items-center gap-2 rounded-xl border border-indigo-100 bg-indigo-50 px-3 py-2.5 text-xs font-bold text-indigo-700 sm:px-4 sm:text-sm">
           <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
           System Health ↗
         </a>
@@ -227,10 +228,61 @@
     const healButton = document.getElementById('healButton');
     const timeline = document.getElementById('recoveryTimeline');
 
+    const ROLL_KEY = 'resultshield_last_roll';
+    const RESTORE_KEY = 'resultshield_restore_result';
+
     let formIsSubmitting = false;
     let reconnectTimer = null;
     let reloadInProgress = false;
     let networkWasLost = false;
+
+    // Remember the roll number in this browser tab.
+    const savedRoll = sessionStorage.getItem(ROLL_KEY);
+
+    if (savedRoll && rollInput && !rollInput.value.trim()) {
+      rollInput.value = savedRoll;
+    }
+
+    if (rollInput) {
+      rollInput.addEventListener('input', function () {
+        const roll = rollInput.value.trim();
+
+        if (roll) {
+          sessionStorage.setItem(ROLL_KEY, roll);
+        } else {
+          sessionStorage.removeItem(ROLL_KEY);
+        }
+      });
+    }
+
+    // When leaving for the dashboard, remember to reload the result on return.
+    document.getElementById('dashboardLink').addEventListener('click', function () {
+      if (rollInput.value.trim()) {
+        sessionStorage.setItem(ROLL_KEY, rollInput.value.trim());
+        sessionStorage.setItem(RESTORE_KEY, '1');
+      }
+    });
+
+    // Restore the result by requesting it again from the server.
+    // This avoids displaying an old result when a failure is active.
+    const shouldRestore = sessionStorage.getItem(RESTORE_KEY) === '1';
+
+    if (shouldRestore) {
+      sessionStorage.removeItem(RESTORE_KEY);
+
+      const hasResult = document.body.dataset.hasResult === 'true';
+      const hasError = document.body.dataset.hasError === 'true';
+      const failureActive = document.body.dataset.failureActive === 'true';
+
+      if (!hasResult && !hasError && !failureActive && rollInput.value.trim()) {
+        setTimeout(function () {
+          if (!formIsSubmitting) {
+            formIsSubmitting = true;
+            HTMLFormElement.prototype.submit.call(resultForm);
+          }
+        }, 150);
+      }
+    }
 
     function setNetworkOffline(message) {
       document.body.classList.add('network-offline');
@@ -264,6 +316,7 @@
           const roll = rollInput.value.trim();
 
           if (roll) {
+            sessionStorage.setItem(ROLL_KEY, roll);
             document.getElementById('networkStatus').textContent =
               'Connection restored. Reloading your result...';
 
@@ -314,6 +367,7 @@
 
     resultForm.addEventListener('submit', function (event) {
       if (formIsSubmitting) return;
+
       event.preventDefault();
 
       if (!rollInput.value.trim()) {
@@ -326,6 +380,8 @@
         setNetworkOffline('Internet disconnected. Waiting to reconnect...');
         return;
       }
+
+      sessionStorage.setItem(ROLL_KEY, rollInput.value.trim());
 
       formIsSubmitting = true;
       resultButton.disabled = true;
@@ -365,6 +421,12 @@
         return;
       }
 
+      const roll = rollInput.value.trim();
+
+      if (roll) {
+        sessionStorage.setItem(ROLL_KEY, roll);
+      }
+
       healButton.disabled = true;
       healButton.textContent = 'Healing...';
       document.getElementById('healingTitle').textContent = 'Healing Initiated';
@@ -376,10 +438,11 @@
         const response = await fetch('/api/heal-result', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ rollNumber: rollInput.value.trim() })
+          body: JSON.stringify({ rollNumber: roll })
         });
 
         const data = await response.json();
+
         if (!response.ok || !data.success) {
           throw new Error(data.message || 'Healing failed');
         }
